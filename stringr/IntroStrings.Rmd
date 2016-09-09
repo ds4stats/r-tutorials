@@ -1,0 +1,276 @@
+---
+title: "Intro to Text Manipulation in R"
+output:
+  html_document: default
+  word_document: default
+---
+Many data sets have character strings in them. For example, in a file of tweets from Twitter (which are basically just strings of characters), perhaps you want to search for occurrences of a certain word or twitter handle. Or a character variable in a data set might be location with a city and state abbreviation, and you want to extract those observations with location containing "NY."
+
+
+In this tutorial, you will learn how to manipulate text data using the package `stringr` and how to match patterns using regular expressions. Some of the commands include:
+
+
+Command | Description
+--------|---------------------------------------------------------
+`str_sub` | Extract substring from a given start to end position
+`str_detect` |Detect presence/absence of first occurrence of substring 
+`str_locate` | Give position (start, end) of first occurrence of substring
+`str_locate_all`|Give positions of all occurrences of a substring 
+`str_replace` | Replace one substring with another
+
+
+
+###1. Extracting and locating substrings
+
+
+We introduce some basic commands from `stringr`.
+
+
+The `str_sub` command extracts substrings from a string (that is, a sequence of characters) given the starting and ending position. For instance, to extract the characters in the second through fourth position or each string in fruits:
+
+
+```{r}
+library(stringr)
+fruits <- c("apple", "pineapple", "Pear", "orange", "peach", "banana")
+str_sub(fruits, 2, 4)
+```
+
+
+**Question 1** What are the characters in the first through third position of each string in fruits?
+
+
+The `str_detect` command checks to see if any instance of a pattern occurs in a string.
+
+
+```{r}
+
+str_detect(fruits, "p")  #any occurrence of 'p'?
+```
+Note that pattern matching is case-sensitive.
+
+
+To locate the position of a pattern within a string, use `str_locate`:
+
+
+```{r}
+str_locate(fruits, "an")
+```
+
+
+Only the fourth and sixth fruits contain "an." In the case of "banana," note that only the first occurrence of "an" is returned.
+
+
+To find all instances of "an" within each string:
+
+
+```{r}
+str_locate_all(fruits,"an")
+```
+
+
+**Remark** 
+
+
+The command `str_locate_all` returns a list. 
+
+```{r}
+out <- str_locate_all(fruits, "an")
+data.class(out)
+out[[6]]
+unlist(out)
+length(unlist(out))/2    #total number of times "an" occurs in vector fruits
+```
+
+
+###2. Regular expressions###
+
+
+Now suppose we want to detect or locate words that begin with "p" or end in "e," or match a more complex criteria. A **regular expression** is a sequence of characters that define a pattern.
+
+Let's detect strings that begin with either "p" or "P". The metacharacter "^" is used to indicate the beginning of the string, and "[Pp]" is used to indicate "P" or "p".
+
+
+```{r}
+str_detect(fruits, "^[Pp]")
+```
+
+
+Similarly, the metacharacter "$" is used to signify the end of a string.
+
+
+```{r}
+str_detect(fruits, "e$" )   #end in 'e'
+```
+
+
+The following are other metacharacters that have special meanings and so are reserved:
+
+`* \ + $ { }  [ ]   ^ ? .`
+
+For instance, a period matches any single character: 
+
+gr.y matches gray, grey, gr9y, grEy, etc.
+
+
+and * indicates 0 or more instances of the preceding character:
+
+xy*z matches xz, xyz, xyyz, xyyyz, xyyyyz, etc.  
+
+
+To detect the letter "a" followed by 0 or more occurrences of "p", type:
+
+
+```{r}
+str_detect(fruits, "ap*")     
+```
+
+
+Compare this to
+
+
+```{r}
+str_detect(fruits, "ap+")
+```
+
+
+The "+" in front of the "p" indicates that we want one or more occurrences of "p." 
+
+
+Here is a more complex pattern:
+
+
+```{r}
+str_detect(fruits, "^a(.*)e$") 
+```
+
+
+The anchors `^` and `$` are used to indicate we want strings that begin with the letter a and end with e. The `(.*)` indicates that we want to match 0 or more occurrences of any character. In particular, parentheses can be used to group parts of the pattern for readability.
+
+
+###3 Example
+
+
+Suppose we want to extract information on 10 digit United States phone numbers from a text file.
+
+
+```{r}
+a1 <- "Home: 507-645-5489"
+a2 <- "Cell: 219.917.9871"
+a3 <- "My work phone is 507-202-2332"
+a4 <- "I don't have a phone"
+info <- c(a1, a2, a3, a4)
+info
+```
+
+
+We will now extract just the phone numbers from this string.
+
+
+The area code must start with a 2 or higher so we use brackets again to indicate a range: [2-9]. The next two digits can be between 0 and 9, so we write [0-9]{2}. For the separator, we use [-.] to indicate either a dash or a period. The complete regular expression is given below:
+
+
+```{r}
+phone <- "([2-9][0-9]{2})[-.]([0-9]{3})[-.]([0-9]{4})"
+out <- str_detect(info, phone)
+out
+```
+
+
+Again, `str_detect` just indicates the presence or absence of the pattern in question.
+
+
+```{r}
+str_extract(info, phone)
+```
+
+
+Let's anonymize the phone-numbers!
+
+
+```{r}
+str_replace(info, phone, "XXX-XXX-XXXX")
+```
+
+
+**Remarks** 
+
+1. As we noted above, certain characters are reserved. If we want to actually reference them in a regular expression, either put them within a bracket, or use a double forward slash.
+
+
+```{r}
+str_locate(info, "[.]")  #find first instance of period
+str_locate(info, "\\.")  #same
+str_locate(info, ".")    #first instance of any character
+```
+
+
+2. Metacharacters have different meanings within brackets.
+
+
+```{r}
+str_detect(fruits, "^[Pp]")  #starts with 'P' or 'p'
+str_detect(fruits, "[^Pp]")  #any character except 'P' or 'p'
+str_detect(fruits, "^[^Pp]") #start with any character except 'P' or 'p'
+```
+
+
+3. See the handout regexp.pdf for a summary of regular expressions.
+
+
+###4. Matching brackets or html tags
+
+
+In many cases, you may want to match brackets such as [8] or html tags such as `<table>`.
+
+
+```{r}
+out <- c("abc[8]", "abc[9][20]", "abc[9]def[10][7]", "abc[]")
+out
+
+```
+
+
+In order to better understand what regular expressions are matching here, we will replace pieces of the above strings with the character "X".
+
+
+To replace the left bracket, we write `\\[`. Next we want to match 0 or more occurrences of any character except the right bracket so we need `[^]]*`. Finally, to match the right bracket `\\]`.
+
+
+```{r}
+str_replace_all(out, "\\[([^]]*)\\]", "X")
+
+```
+
+
+Compare this to
+
+
+```{r}
+str_replace_all(out, "\\[(.*)\\]", "X")
+
+```
+
+
+In this case, we match the first left bracket (indicated by the `\\[`), followed by 0 or more instances of *any* character (the (.*) portion), which could be a right bracket until the final right bracket `\\]`.
+
+
+### On your own
+
+1. Create a vector `veggies` containing "carrot", "bean", "peas", "cabbage", "scallion", "asparagus.
+
++ Find those strings that contain the pattern "ea".
+
++ Find those strings that end in "s".
+
++ Find those strings that contain at least two "a"'s.
+
++ Find those strings that begin with any letter except "c".
+
++ Find the starting and ending position of the pattern "ca" in each string.
+
+2. The regular expression `"^[Ss](.*)(t+)(.+)(t+)"` matches "scuttlebutt", "Stetson", and "Scattter", but not "Scatter." Why?
+
+
+### Resources
+
+* [http://www.regular-expressions.info/rlanguage.html](Regular expressions with R)

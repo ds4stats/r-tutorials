@@ -1,0 +1,220 @@
+---
+title: "Introduction to Data scraping with R"
+output:
+  html_document: default
+  word_document: default
+---
+###Scraping Data From the Web###
+
+
+Data on the web are often presented in tables. For instance, we can see a list of countries by population in 1900 on [Wikipedia](https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900)
+
+
+Web pages are written in HTML (Hyper Text Markup Language) which uses **tags** to describe different aspects of document content. For example, a heading in a document is indicated by `<h1>My Title</h1>` whereas a paragraph would be indicated by `<p>A paragraph of content...</p>`. 
+
+
+In this tutorial, we will learn how to read data from a table on a web page into R. We will need the package `rvest` to get the data from the web page, and the `stringr` package to clean up the data.
+
+
+```{r, message = FALSE}
+library(rvest)
+library(stringr)
+```
+
+
+### 1. Reading data into R with `rvest`
+
+
+To get the population data on  [Wikipedia](https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900) into R, we use the `read_html` command from the `xml2` package (which is loaded when `rvest` is called) to parse the page to obtain an HTML document. 
+
+
+We then use the `html_nodes` command that extracts all occurrences of the desired tag. We will be interested in scraping data presented in tables, so in the source code, the data are in tables: `<table> ... </table>`.
+
+
+Note: some of the `rvest` commands may be slow depending on your Internet connection and the complexity of the web page.
+
+
+```{r}
+popParse <- read_html("https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900")
+
+str(popParse)
+```
+
+
+The `read_html` command creates an R object, basically a list, that stores information about the web page.
+
+
+To extract a table from this web page (this may take some time):
+
+
+```{r}
+popNodes <- html_nodes(popParse, "table")
+popNodes
+```
+There are several tables in this document. By inspecting the output of `popNodes`, we make a guess that we want the second table. (In other cases, trial and error may be required.) We select the second table by using double brackets:
+
+
+```{r}
+pop <- html_table(popNodes, header = TRUE, fill = TRUE)[[3]]
+str(pop)
+
+```
+
+### 3. Cleaning the data frame
+
+
+We now have a workable data frame that we can analzye. Notice that even though the first and third columns are numbers, they are classifed as "character." For `Rank`, that is because the first observation is the world population and it is not assigned a rank, but rather, the character "-". The `Population` column is also a character because the numbers have commas in them, plus Morocco's population is given as "8,000,000 [2][3]" to indicate some footnotes. We need to convert these columns to be numeric.
+
+
+In the case of the <tt>Rank</tt> column, we will remove the world population.
+
+
+We will also simplify the name of the third column to "Population."
+
+
+```{r}
+pop2 <- pop[-1, ]         #remove row 1
+head(pop2)
+
+row.names(pop2) <- NULL    #reset row numbers to start at 1
+
+pop2$Rank <- as.numeric(pop2$Rank) #coerce Rank to numeric
+
+names(pop2)[3] <- "Population" #rename 3rd column
+```
+
+
+To remove the commas in the Population numbers, we will use `str_replace_all` from the `stringr` package.
+
+
+```{r}
+pop2$Population <- str_replace_all(pop2$Population, ",", "")
+head(pop2)
+```
+
+
+We still have a problem with Morocco, country number 19. Since it is the only country that is a problem, we can fix this individually, but we will also show a more general way to do this in case you encounter more than one instance.
+
+
+```{r}
+pop2$Population[19]
+out <- pop2$Population
+out[19] <- "8000000"
+out <- as.numeric(out)
+head(out, 20)
+
+out2 <- str_replace_all(pop2$Population, "\\[[^]]+\\]", "")
+out2 <- as.numeric(out2)
+head(out2, 20)
+
+identical(out, out2)
+
+pop2$Population <- out2
+```
+
+
+### 4. A movie box office example
+
+
+The web site [Box Office Mojo](http://www.boxofficemojo.com) gives statistics on box office earnings of movies. In addition to daily earnings, the web site also maintains lists of yearly and all time record holders.
+
+
+We will look at the movies in the top 100 in all time movie worldwide grosses in box office receipts. In particular, we will scrape the data from [Box Office Mojo: All Time Box Office](http://www.boxofficemojo.com/alltime/world/?pagenum=1). The dollar amounts are in millions of dollars and the years marked with "^" indicate that the movie had multiple releases.
+
+
+```{r}
+movieParse<- read_html("http://www.boxofficemojo.com/alltime/world/?pagenum=1")
+
+movieTables <- html_nodes(movieParse, "table")
+head(movieTables)
+
+movies <- html_table(movieTables, header = TRUE, fill = TRUE)[[3]]
+str(movies)
+```
+
+
+We will first clean up the column names and then convert the character variables into numeric variables. 
+
+
+```{r}
+names(movies)[5:9] <- c("DomesticDollars", "DomesticPercentage", "OverseasDollars", "OverseasPercentage", "Year")
+```
+
+
+For the grosses, we note that the numbers are either prefaced by a dollar sign or end with a percentage, both of which will need to be removed. We will also have to remove the commas.
+
+
+```{r}
+out <- str_replace_all(movies$Worldwide, "\\$|,", "" )
+head(out)
+
+movies$Worldwide <- as.numeric(out)
+```
+
+
+**Exercise** Clean up the remaining variables.
+
+
+How many images are there on this web page? Images are coded as
+`<img source = "NameOfImageFile.jpg">`, so we search for the selector "img".
+
+
+```{r}
+moviesImg <- html_nodes(movieParse, "img")
+
+moviesImg
+```
+### 4.  A Billboard Top 200 example
+
+The website [billboard.com](http://www.billboard.com)
+keeps track of top songs and albums from the music industry.
+
+
+One page lists the top 200 albums for a given week. We will extract these albums. In the source code, the songs are listed in headers:
+`<h2 class = "chart-row__song">Album Name </h2>`.
+
+
+```{r}
+albumParse <- read_html("http://www.billboard.com/charts/billboard-200")
+
+albumNodes <- html_nodes(albumParse, "h2")
+
+albumNodes[1:10]
+```
+
+
+There are other entries with `<h2>` headers besides the top songs, so we must first detect the nodes of interest.
+
+
+```{r}
+index <- str_detect(albumNodes, "chart-row__song")
+index[1:10]
+
+albums <- albumNodes[index]
+albums[1:10]
+```
+
+
+Now, we just need to extract the album name which is placed between `<h2 ... >` and `</h2>`. We will use a regular expression to handle this.
+
+
+```{r}
+albums <- str_replace(albums, ".*\">(.+)</h2>","\\1")
+albums[1:10]
+```
+
+In `str_replace`, we first match
+0 or more occurrences of any character followed by a ">. This is followed by one or more occurrences of any character---this is the (.+) portion of the regular expression, and finally followed by the `</h2>`. This expression will be replaced by what is in the (.+) portion of the regular expression---this is what the "\\1" argument is accomplishing.
+
+
+### On Your Own
+
+
+* The web site [BikeRaceInfo](http://www.bikeraceinfo.com/tdf/tdfstats.html) has a table with data on past winners of the Tour de France. Create a cleaned-up data frame of this data.
+
+* The web site [NY Times Best Sellers: Hardcover Fiction](http://www.nytimes.com/books/best-sellers/hardcover-fiction) contains a list of best-selling fiction books. Scrape the names of these top books. The list of books are tagged via `<h2>title</h2>`.
+
+
+### Resources
+
+* [HTML Tutorial](www.w3schools.com)

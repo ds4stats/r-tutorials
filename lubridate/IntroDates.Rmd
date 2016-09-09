@@ -1,0 +1,190 @@
+---
+title: "Introduction to Working with Dates in R"
+output:
+  html_document: default
+  word_document: default
+---
+
+In many data files, the date or time of day will be an important variable. In this introductory tutorial, we will learn some basics on how R handles dates.
+
+
+### Using base R to work with dates
+
+
+There is an international standard ISO 8610 for dates that has the format `yyyy-mm-dd hh:mm:ss`. We can use the base R command `as.Dates()` to convert dates to this standard. The first argument is a vector with the date(s) to be converted, and the second argument gives the format of these dates:
+
+
+```{r}
+as.Date(c("06-28-2015", "11-25-2016"), format = "%m-%d-%Y")
+
+as.Date(c("07/14/17"), format = "%m/%d/%y")
+```
+
+Code | Value
+-----|------
+`%d`   | Day of month as number
+`%m`   | Month as number
+`%b`   | Month abbreviated
+`%B`   | Month full name
+`%y`   | Year, two digits
+`%Y`   | Year, four digits
+
+
+Basic operations on date objects include finding the number of days between dates,
+
+
+```{r}
+x <- as.Date("May 12, 2017", format = "%B %d, %Y")
+y <- as.Date("March 5, 2017", format = "%B %d, %Y")
+x - y
+```
+
+and creating a sequence of dates using, for instance, weekly increments.
+
+
+```{r}
+seq(y, length = 6, by = "week")
+```
+
+We can also identify the day of the week, or month or quarter on which a date falls.
+
+
+```{r}
+weekdays(y)
+months(y)
+quarters(y)
+```
+
+Date objects are stored internally in R as the number of days since January 1, 1970.
+
+
+```{r}
+as.numeric(x)
+x - as.Date("1970-01-01")
+```
+
+
+### 2. The POSIXct class 
+
+
+In addition to the date, we may also have time information. The `as.POSIXct` command will convert the date and time information to the ISO 8610 standard format.  POSIXct class date objects will specify a timezone also. 
+
+
+If you only have a date, then the syntax is similar to what we saw above:
+
+
+```{r}
+w <- as.POSIXct(c("05/24/2017", "10/15/2019"), format = "%m/%d/%Y")
+w
+data.class(w)
+diff(w)
+```
+
+
+The timezone in the output will be system dependent.
+
+
+To add the time information
+
+
+```{r}
+u <- as.POSIXct("05/24/2017 06:13:10", format = "%m/%d/%Y %H:%M:%S")
+u
+```
+
+
+You can use the same commands on the POSIXct class that you used for the Date class:
+
+
+```{r}
+weekdays(w)
+quarters(w)
+
+seq(u, length = 5, by = "months")
+seq(u, length = 5, by = "hours")
+
+w[1]-u
+```
+
+
+If you specify just the time, then `as.POSIXct` will add the current date:
+
+
+```{r}
+as.POSIXct("08:45", format = "%H:%M")
+Sys.time()              #current time
+
+as.POSIXct("08:45", format = "%H:%M", tz = "EST")  #specify time zone
+```
+
+
+The list of timezone names is not set in R but is dependent on the user's operating system. Most operating systems recognize the names given here
+[http://en.wikipedia.org/wiki/List_of_tz_database_time_zones](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+
+
+### 3. The lubridate package
+
+
+The 'lubridate' package by Grolemund and Wickham is just a wrapper for POSIXct commands: that is, `lubridate` commands have a more intuitive syntax for converting to the POSIXct structure.
+
+
+```{r}
+library(lubridate)
+```
+
+**Remark**
+
+The message following the `library` command tells us that there is a command called `dates` in `lubridate` which will supersede (mask) the similarly named command `dates` in base R.
+
+
+The following commands assume the given dates have the format specified by the command name itself:
+
+
+```{r message = FALSE}
+mdy("05/12/2014") #format of input is month/day/year
+dmy("21-06-1997") #format of input is day-month-year
+mdy_hms("05/12/2014 11:45:10") #format of input is month/day/year hours:minutes:seconds
+```
+
+
+By default, the `mdy_hms` command represents time using UTC, Universal Coordinated Time Zone, which is a standard defined by the International Telecommunications Union Recommendation. Time zones are then expressed as positive or negative offsets from the UTC. 
+
+
+To find the day of the week of a date, expressed either as a number or the name of the day:
+
+
+```{r}
+wday("05/12/2014 11:45:10")
+wday("05/12/2014 11:45:10", label = TRUE)
+```
+
+
+####Rounding dates
+
+
+```{r}
+u
+round_date(u, "month")
+round_date(u, "hour")
+floor_date(u, "hour")
+ceiling_date(u, "month")
+```
+
+#### Some common lubridate commands
+
+command    | output
+-----------|----------
+`today`   | Date with no time
+`now`      | Date with time
+`year`     | Year  
+`month`    | Month
+`week`     | Week
+`yday`     | Day of year (number)
+`mday`     | Day of month (number)
+`hour`     | Hour
+`minute`   | Minute
+`second`   | Second
+`tz`     | Time zone
+`floor_date` | Round down
+`ceiling_date`| Round up
+`round_date` | Round
