@@ -1,0 +1,213 @@
+---
+title: "Making Maps with Shapefiles"
+output:
+  html_document:
+    fig_height: 2
+    fig_width: 5
+  word_document:
+    fig_height: 2
+    fig_width: 5
+---
+
+```{r,message = FALSE}
+# load required packages
+library(maptools) # creates maps and work with spatial files
+library(broom)    # assists with tidy data
+library(ggplot2)  # graphics package
+library(leaflet)  # interactive graphics (output does not show in RMD files)
+library(dplyr)    # joining data frames
+library(readr)    # quickly reads files into R
+```
+
+Before working through this activity it is helpful to have some familiarity with `ggplot2 and making maps with ggplot2[[links needed]]`.
+
+### 1. A brief introduction to shapefiles
+
+In the previous `Introduction to Creating Maps with ggplot2[[link needed]]`, we used a simplistic .CSV file that contained latitude, longitude and group information. However, in most cases, geographic information for maps is stored in a more complex format, commonly referred to as a shapefile. A shapefile consists of several component files. Not all components are needed, but each shapefile must have at least the following three component files:
+
+- *.shp*: The main shape file. This file contains all the information needed to draw geographic features such as points, lines, and polygons.
+- *.shx*: The shape index file, which organizes the geometries in a way that is easily read by programs.
+- *.dbf*: The attribute file. This contains the actual data associated with each geographic feature, such as the population or area of each country.
+
+Shapefiles allow you to easily draw different polygons (i.e. countries, administrative divisions), lines (i.e. roads, rivers), and points (i.e. fire departments, mountains, battles).
+
+### 2. Working with shapefiles in R
+
+**Data**: We will use a dataset based upon the [Global Terrorism Database](https://www.start.umd.edu/gtd/) which consists of all terrorist incidents from 1970-2013. This is a large file and may take a while to load. We will also use a shapefile of the world's state boundaries that was downloaded from the [Natural Earth website] (http//www.naturalearthdata.com/download/50m/cultural/ne_50m_admin_0_countries.zip). 
+
+```{r, warning=FALSE}
+# Reads the shapefile into the R workspace.
+TerrorismData <- read_csv("data/terrorismData.csv")
+
+Worldshapes <- readShapeSpatial("data/ne_50m_admin_0_countries")
+
+str(Worldshapes, max.level = 2)
+```
+
+**Remarks**
+
+* The `readShapeSpatial` from the `maptools` package allows us to load all component files simultaneously.
+* The `str` command allows us to see that the `Worldshapes` object is of the class `SpatialPolygonsDataFrame`. This means that R is representing this shapefile as a special object consisting of 5 slots of geographic data. The first slot, (and the most relevant to us) is the data slot, which contains a data frame representing the actual data adjoined to the geometries. Similar to how we access a column in a data frame with the `$` infix, we can also access a slot in a shapefile with the `@` infix.
+* The `max.level=2` limits the information that is printed from the `str` command. 
+
+
+```{r}
+names(Worldshapes@data)
+dim(Worldshapes@data)
+```
+
+The `worldshapes@data` file containes 241 rows and 63 columns describing aspects of each country. Each row represents a country.
+
+### 3. Creating maps with `ggplot()`
+
+We can use `ggplot2` to draw maps using shapefiles. However, `ggplot2` on its own cannot read shapefiles directly -- the shapefile must first be converted to a data frame. We can convert a spatial object to a data frame with the `tidy` function from the `broom` package.
+
+
+```{r  message = FALSE}
+Worldshapes_tidied <- tidy(Worldshapes)
+
+g <- ggplot() +
+  geom_polygon(data = Worldshapes_tidied, 
+               aes(x = long, y = lat, group = group),
+               fill = "lightblue", color = "black")
+g
+```
+
+**Remarks**
+
+* The `Worldshapes_tidied` now contains the latitude, longitude and group information that allows use to create a base map.
+* We can now add points reprepresnting incidents from the **TerrorismData** to the base map. In the example code below, we are plotting all the terrorist incidents which occurred in the year 1984 as points on a map of Europe.
+
+
+```{r}
+# Subset the terrorism database to only include events from the year 1984.
+IncidentsIn1984 <- filter(TerrorismData, iyear == 1984)
+
+g <- g + geom_point(data = IncidentsIn1984, 
+             aes(x = longitude, y = latitude, size = severity, color = severity))
+g
+```
+
+**Remark**
+
+* New parameters, `size` and `color`, were added to show the relative severity^1^ of each incident.
+* You can see how terrorist incidents tend to cluster in zones of conflict (see Northern Ireland, Corsica, and Israel).
+
+Other useful `ggplot2` capabilities can be added onto the map. For example, in the following graph we can fill in our countries based upon a variable in our dataset, the gross domestic product.
+
+```{r}
+# Create a new column called "id"
+Worldshapes1 <- mutate(Worldshapes@data, id=as.character(0:240))
+
+# Join the tidied shapefile with the data from our original shapefile.
+Worldshapes2 <- left_join(Worldshapes_tidied, Worldshapes1, 
+      by = "id")
+
+# Plots map, coloring each country by the log(Gross Domestic Product)
+ggplot() +
+      geom_polygon(data = Worldshapes2, 
+        aes(x = long, y = lat, group = group, fill = sqrt(gdp_md_est)), 
+        color = "black") + 
+      scale_fill_continuous(name="Population(millions)",limits = c(0,4000),
+        breaks=c(1000,2000,3000), 
+        low = "white", high = "darkblue")
+      geom_point(data = IncidentsIn1984, 
+        aes(x = longitude, y = latitude), 
+        size = 1, color = "red")
+```
+
+**Remarks**
+
+- Notice in this second graph, the code `size = 1, color = "red"` are outside the `aes()` command. This is because the size and color are fixed values and are not dependent upon the data. However, in the previous graph **severity** is a variable within the data frame, so the code, `size = severity, color = severity`, was within the `aes()`. 
+- A warning is given with this code `NaNs produced`. This data uses `-99` to represent missing values and so provides a warning when a few of the countries GPD values are not able to be calculated. By viewing the data and the graph, we see there is very little impact on the overall graph, so we will not go back to change the `-99` values.
+
+This graph does not show temporal information, or how terrorism changes through time. One way to implement this is to have multiple maps plotted in the same window by making use of the `facet` command. In the graph below we look at the number of terrorism incidents over time in the Republic of Ireland and the United Kingdom. 
+
+
+```{r}
+# create a new terrorism data frame that includes only four years
+Incidents2 <- filter(TerrorismData, iyear == 1975 | iyear == 1985 | iyear == 1995 |iyear == 2005)
+
+p <- ggplot() + geom_point(data = Incidents2, 
+        aes(x = longitude, y = latitude, size = severity), 
+        size = 1, color = "red", alpha = .5) + 
+    facet_wrap(~iyear) + 
+    coord_cartesian(xlim = c(-11, 3), ylim = c(51, 59)) + 
+    geom_polygon(data = Worldshapes2, 
+        aes(x = long, y = lat, group = group),
+        fill = "lightblue", color = "black", alpha = .3)
+p
+
+```
+
+
+**Questions** 
+
+1) Create a graph that shows the terrorism incidents that occured in the United States during 2001. Have the size and color of the incident be determined by `severity`.
+
+2) Suppose you want to look the effects of terrorism before, during, and after the United States invasion of Iraq in 2003. Create three maps of the area, displayed side-by-side. Hint: You might also want to center the map on Iraq using `xlim = c(35,50)` and `ylim = c(28,38)`.
+
+3) Create a world map colored by the square root of the estimated population `sqrt(pop_est)` from the `Worldshapes@data`. Does it appear that population is highly correlated with the number of incidents that occur?
+
+```{r eval=FALSE, echo=FALSE}
+p <- ggplot() + geom_point(data = Incidents2, 
+        aes(x = longitude, y = latitude, size = severity), 
+        size = 1, color = "red", alpha = .5) + 
+    facet_wrap(~iyear) + 
+    coord_cartesian(xlim = c(35, 50), ylim = c(28, 38)) + 
+    geom_polygon(data = Worldshapes2, 
+        aes(x = long, y = lat, group = group),
+        fill = "lightblue", color = "black", alpha = .3)
+p
+```
+
+
+### 4. Interactive maps using the `leaflet` package
+
+If you are using electronic handouts or websites, you may want to be able to zoom in, click on objects, and have our maps update according to user inputs. This can be made possible with the use of HTML widgets. In this exercise, we will be using the `leaflet` package, a great tool for rendering dynamic maps with various interactive elements.
+
+Below is some code which renders terrorist incidents in Europe using the `leaflet` package. Note that the code does run within Rstudio, but a graphic cannot be posted to a knitted HTML or word document.
+
+```{r eval = FALSE}
+library(leaflet)
+
+# Subset terrorism database to only contain events in Europe in 1984
+Europe1984Incidents <- filter(TerrorismData, iyear == 1984, 
+    region2 == "Europe & Central Asia")
+# addTiles()  Add background map
+# setView( Set where the map should originally zoom to
+leaflet() %>%
+    addTiles() %>% 
+    setView(lng = 10, lat = 50, zoom = 4) %>% 
+    addCircleMarkers(data = Europe1984Incidents,
+        lat = ~latitude, lng = ~longitude,
+        radius = ~severity, popup = ~info,
+        color = "red", fillColor = "yellow")
+
+```
+
+Maps created with `leaflet` are embedded with even more powerful capabilities. In this map, for example, you can click on an incident marker to see a popup of detailed information concerning the specific event you clicked on.
+
+**Questions**
+
+4) Using the `leaflet` map created with the above code, identify the location of the indicent that resulted in the most deaths in Great Britain. Who was the intended target during this incident?
+5) Use the `leaflet` package to create an interactive map of the United States using years 2000 through 2005.
+
+### 5. On your own
+Both **Worldshapes** and **TerrorismData** files have a column that defines a region as `Europe and Central Asia` (see `Worldshapes@data$region_wb` and `TerrorismData$region2`). 
+
+Create a map of all incidents that occured in `Europe and Central Asia` during 2013. What countries appear to have the most incidents? Give a short (i.e. one paragraph) description of the graph. This description should include an identification of the countries with the most incidents. 
+
+
+### Additional resources
+A wide variety of global shapefiles can be found at Natural Earth: http://www.naturalearthdata.com.   
+A large repository of lower-level administrative divisions can be accessed at the GADM database: http://www.gadm.org/country.  
+More shapefiles specific to the geographic information you want to show can usually be found via a quick Google search.  
+
+   
+
+---------
+<sub>
+^1^ Severity is defined in our dataset as the natural log of a weighted sum of the number of people killed and wounded: $2 \cdot \log{(4 \cdot killed + wounded)}$.  
+</sub>
+
