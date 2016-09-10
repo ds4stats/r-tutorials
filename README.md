@@ -1,8 +1,6 @@
 # r-tutorials
 
-ADD SOME INTRO TO OUR TUTORIALS HERE
-
-## R tutorials
+This work represents collaborative work across Grinnell College (Shonda Kuiper), Lawrence University (Adam Loy) and Carleton College (Laura Chihara) funded by grants from the ACM and the Teagle Foundation.
 
 - **data-scraping**: An introduction to using `rvest` to scrape data from the web.
 
@@ -23,5 +21,3 @@ ADD SOME INTRO TO OUR TUTORIALS HERE
 
 - **tidyr**: An introduction to tidying data in R using the `tidyr` package. Examples using the `gather`, `spread`, 
 and `separate` functions, both together and in concert, are provided.
-
-## Case studies
