@@ -51,7 +51,7 @@ To extract a table from this web page (this may take some time):
 popNodes <- html_nodes(popParse, "table")
 popNodes
 ```
-There are several tables in this document. By inspecting the output of `popNodes`, we make a guess that we want the second table. (In other cases, trial and error may be required.) We select the second table by using double brackets:
+There are several tables in this document. By inspecting the output of `popNodes`, we make a guess that we want the third table. (In other cases, trial and error may be required.) We select the third table by using double brackets:
 
 
 ```{r}
