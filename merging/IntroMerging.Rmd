@@ -210,23 +210,28 @@ The files `books.csv`, `authors.csv`, and `book-authors.csv` give details about 
 
 1. Read the three files into R, naming them **books**, **authors**, and **book_authors**.
 
-2. Use the appropriate `join` statement to add the ISBNs to the **authors** data table.
 
-3. Use the appropriate `join` statement to add the author information table from #2 to the **books** data table.
+2. Use the appropriate `join` statement to add the ISBNs to the **authors** data table. Why does the resulting data frame have 31 rows instead of 11?
 
-4. Are there any authors in the **authors** data table that do not correspond to books in the **books** data table? Use an appropriate join statement to do this.
 
-5. After reading *A Game of Thrones* the student decides to read the rest of the series over the summer. `books2.csv` contains the updated books on the student's reading list. Read this file into R, naming it **books2**.
-
-6. Use the same join statement that you did in #2, but using **books2** rather than **books**. Why does the resulting data frame have 31 rows instead of 11?
-
-7. To eliminate the duplicate rows of your data frame from #6 (which we'll assume you named **df6**) run the following code (change the object names to align with your code as necessary):    
+3. To eliminate the duplicate rows of your data frame from #6 (which we'll assume you named **df2**) run the following code (change the object names to align with your code as necessary):    
 
       ```
-      df6 <- unique(df6)
+      df2 <- unique(df2)
       ```
 
-8. Use the appropriate `join` statement to add the author information table from #2 to the data frame you created in #7.
+
+4. Use the appropriate `join` statement to add the author information table from #3 to the **books** data table. 
+
+
+5. Are there any authors in the **authors** data table that do not correspond to books in the **books** data table? Use an appropriate join statement to do this.
+
+
+6. After reading *A Game of Thrones* the student decides to read the rest of the series over the summer. `books2.csv` contains the updated books on the student's reading list. Read this file into R, naming it **books2**.
+
+
+7. Use the same join statement that you did in #4, but using **books2** rather than **books**.
+
 
 
 ### 5. Additional Resources
