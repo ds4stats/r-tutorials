@@ -16,9 +16,9 @@ It is often necessary to create graphs to effectively communicate key patterns w
 There are two key functions that are used in `ggplot2`:
 
 * `qplot()`or *quick plot* is similar to base plotting functions in R and is primarily used to produce quick and easy graphics.
-* `ggplot()`the *grammar of graphics plot* is different from other graphics funcitons because it uses a particular grammar inspired by Leland Wilkinson's landmark book, *The Grammar of Graphics*, that focused on thinking about, reasoning with and communicating with graphics. It enables layering of independent components to create custom graphics.
+* `ggplot()`the *grammar of graphics plot* is different from other graphics functions because it uses a particular grammar inspired by Leland Wilkinson's landmark book, *The Grammar of Graphics*, that focused on thinking about, reasoning with and communicating with graphics. It enables layering of independent components to create custom graphics.
 
-```{r message = FALSE}
+```{r message = FALSE, warning = FALSE}
 # This tutorial will use the following two packages
 library(ggplot2)
 library(mosaic)
@@ -62,7 +62,7 @@ qplot(data=AmesHousing,x=Kitchen.Qual,y=log(SalePrice),geom="boxplot")
 2) What is the `facet` argument used for?
 3) Based upon the data documentation, what are the five different levels for kitchen quality?
 4) Do these graphs indicate that the quality of a kitchen could be related to the sale price?
-5) In the RStudio console, type `?qplot`. Modify the above code to create a barchart (`geom=bar`) of sales by kitchen quality. Modify the x-axis label to state "Sale Price of Individual Home" instead of "SalePrice"
+5) In the RStudio console, type `?qplot`. Modify the above code to create a barchart (`geom=bar`) to count the number of sales for each level of kitchen quality. What is the deference between the color and fill command?
 
 
 ### 3. The basic structure of the `ggplot` function
@@ -147,13 +147,12 @@ ggplot(data=AmesHousing) +
 
 * `geom_point` is used to create a scatterplot. As shown in Figure 10, multiple shapes can be used as points. The [Data Visualization Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) lists several shape options`
 * `geom_smooth` adds a fitted line through the data.  
-    + `method=lm` specifies a linear regression line. `method=loess` in the creates a smooth fit curve.
+    + `method=lm` specifies a linear regression line. `method=loess` creates a smooth fit curve.
     + `se=FALSE` removes the shaded confidence regions around each line. 
     + `fullrange=TRUE` extends all regression lines to the same length
 *  `facet_grid` and `facet_wrap` commands are used to create multiple plots. In Figure 12, we have created separate scatterplots based upon the number of fireplaces.
 *  When assigning fixed characteristics, (such as `color`, `shape` or `size`), the commands occur outside the `aes`, as in Figure 10, `color="green"`. When characteristics are dependent on the data, the command should occur within the `aes`, such as in Figure 11 `color=Kitchen.Qual`.
 
-plot.title and axis.title are "theme elements." (Notice in the below table that you can modify the x and y axes individually.)
 
 In the above examples, only a few `geoms` are listed. The [ggplot2 website](http://docs.ggplot2.org/current/) lists each `geom` and gives detailed examples of how they are used. 
 
