@@ -23,6 +23,7 @@ In this example we will explore how to use each of these functions, as well as h
 To begin, let's make sure that our data set and the `dplyr` package are loaded
 
 ```{r message=FALSE, warning=FALSE}
+# NOTE THAT IF YOU USE THE "read_csv" FUNCTION INSTEAD OF "read.csv" SOME COLUMN NAMES WILL BE CHANGED.
 colleges <- read.csv("data/colleges2015.csv")
 library(dplyr)
 ```
@@ -313,6 +314,6 @@ head(colleges_by_state)
 
 * [RStudio's data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) provides a nice summary of the functions in the `dplyr` package, including those covered in this tutorial.
 
-* The [introductory vignette](https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html) to `dplyr` provides an example of wrangling a data set consisting of 336,776 flights that departed from New York City in 2013.
+* The [introductory vignette](https://cran.rstudio.com/web/packages/dplyr/vignettes/dplyr.html) to `dplyr` provides an example of wrangling a data set consisting of 336,776 flights that departed from New York City in 2013.
 
 * Roger Peng's [video overview](https://www.youtube.com/watch?v=aywFompr1F4&feature=youtu.be) of the `dplyr` package.
