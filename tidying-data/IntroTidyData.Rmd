@@ -20,11 +20,11 @@ library(ggplot2) # for plotting
 and load in the example data sets
 
 ```{r}
+# NOTE THAT IF YOU USE THE "read_csv" FUNCTION INSTEAD OF "read.csv" SOME COLUMN NAMES WILL BE CHANGED.
 UBSprices <- read.csv("data/UBSprices.csv", as.is = TRUE)
 polls <- read.csv("data/rcp-polls.csv", na.strings = "--", as.is = TRUE)
 airlines <- read.csv("data/airline-safety.csv", as.is = TRUE)
 ```
-
 
 ### 1. Definition of a tidy data set
 
@@ -112,7 +112,7 @@ To do this, we can use the `extract_numeric` function in the `tidyr` package.
 We now have a data set that we can call tidy.
 
 
-```{r}
+```{r warning=FALSE, message = FALSE}
 tidy_ubs$year <- extract_numeric(tidy_ubs$year)
 head(tidy_ubs)
 ```
@@ -257,4 +257,4 @@ Notice that the first argument given to `spread` is the data frame, followed by 
 
 * [RStudio's data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) provides a nice summary of how to reshape data sets and a quick reminder of the definition of tidy data.
 
-* The [`tidyr` vignette](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) provides additional examples and elaborates on the capabilities of the `tidyr` package.
+* The [tidyr vignette](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) provides additional examples and elaborates on the capabilities of the `tidyr` package.
