@@ -13,8 +13,8 @@ Data sets are stored in tabular format and there are many possible ways to organ
 Make sure that the following packages are loaded
 
 ```{r, warning=FALSE, message=FALSE}
-library(tidyr)   # contains tools to tidy data
-library(ggplot2) # for plotting
+library(tidyr)     # contains tools to tidy data
+library(ggformula) # for plotting
 ```
 
 and load in the example data sets
@@ -119,10 +119,12 @@ head(tidy_ubs)
 
 **Remark** 
 
-This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data is typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggplot2` (see the tutorial IntroToGgplot).
+This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data is typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggformula` (see the tutorial IntroToGgplot).
 
 ```{r}
-qplot(x = factor(year), y = price, data = tidy_ubs, geom = "boxplot", xlab = "year")
+tidy_ubs %>%
+  gf_boxplot(price ~ factor(year)) %>%
+  gf_labs(x = "year")
 ```
 
 This was straightforward since **tidy_ubs** was already tidy, but would have required extra manipulation in the original format. 
