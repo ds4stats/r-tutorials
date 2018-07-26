@@ -158,7 +158,8 @@ $(document).ready(function () {
 </table>
 <p>In this example we will explore how to use each of these functions, as well as how to combine them with the <code>group_by</code> function for groupwise manipulations.</p>
 <p>To begin, let’s make sure that our data set and the <code>dplyr</code> package are loaded</p>
-<pre class="r"><code>colleges &lt;- read.csv(&quot;data/colleges2015.csv&quot;)
+<pre class="r"><code># NOTE THAT IF YOU USE THE &quot;read_csv&quot; FUNCTION INSTEAD OF &quot;read.csv&quot; SOME COLUMN NAMES WILL BE CHANGED.
+colleges &lt;- read.csv(&quot;data/colleges2015.csv&quot;)
 library(dplyr)</code></pre>
 <p><strong>Data</strong>: The file <code>college2015.csv</code> contains information on predominantly bachelor’s-degree granting institutions from 2015 that might be of interest to a college applicant.</p>
 <p>To get a feel for what data are available, look at the first six rows</p>
@@ -486,7 +487,7 @@ head(colleges_by_state)</code></pre>
 <h3>9. Additional Resources</h3>
 <ul>
 <li><p><a href="https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">RStudio’s data wrangling cheat sheet</a> provides a nice summary of the functions in the <code>dplyr</code> package, including those covered in this tutorial.</p></li>
-<li><p>The <a href="https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html">introductory vignette</a> to <code>dplyr</code> provides an example of wrangling a data set consisting of 336,776 flights that departed from New York City in 2013.</p></li>
+<li><p>The <a href="https://cran.rstudio.com/web/packages/dplyr/vignettes/dplyr.html">introductory vignette</a> to <code>dplyr</code> provides an example of wrangling a data set consisting of 336,776 flights that departed from New York City in 2013.</p></li>
 <li><p>Roger Peng’s <a href="https://www.youtube.com/watch?v=aywFompr1F4&amp;feature=youtu.be">video overview</a> of the <code>dplyr</code> package.</p></li>
 </ul>
 </div>
