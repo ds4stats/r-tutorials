@@ -1,8 +1,8 @@
 ---
 title: "Introduction to Data scraping with R"
 output:
-  html_document: default
-  word_document: default
+  html_document:
+    df_print: paged
 ---
 ###Scraping Data From the Web###
 
@@ -25,10 +25,10 @@ library(stringr)
 ### 1. Reading data into R with `rvest`
 
 
-To get the population data on  [Wikipedia](https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900) into R, we use the `read_html` command from the `xml2` package (which is loaded when `rvest` is called) to parse the page to obtain an HTML document. 
+To get the population data on  [Wikipedia](https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900) into R, we use the `read_html` command from the `xml2` package (which is attached when `rvest` is called) to parse the page to obtain an HTML document. 
 
 
-We then use the `html_nodes` command that extracts all occurrences of the desired tag. We will be interested in scraping data presented in tables, so in the source code, the data are in tables: `<table> ... </table>`.
+We then use the `html_nodes` command that extracts all occurrences of the desired tag. We will be interested in scraping data presented in tables, so in the source code, we look for the table tag: `<table> ... </table>`.
 
 
 Note: some of the `rvest` commands may be slow depending on your Internet connection and the complexity of the web page.
@@ -63,7 +63,7 @@ str(pop)
 ### 3. Cleaning the data frame
 
 
-We now have a workable data frame that we can analzye. Notice that even though the first and third columns are numbers, they are classifed as "character." For `Rank`, that is because the first observation is the world population and it is not assigned a rank, but rather, the character "-". The `Population` column is also a character because the numbers have commas in them, plus Morocco's population is given as "8,000,000 [2][3]" to indicate some footnotes. We need to convert these columns to be numeric.
+We now have a workable data frame that we can analyze. Notice that even though the first and third columns are numbers, they are classified as "character." For `Rank`, that is because the first observation is the world population and it is not assigned a rank, but rather, the character "-". The `Population` column is also a character because the numbers have commas in them, plus Morocco's population is given as "8,000,000 [2][3]" to indicate some footnotes. We need to convert these columns to be numeric.
 
 
 In the case of the <tt>Rank</tt> column, we will remove the world population.
@@ -164,48 +164,37 @@ moviesImg <- html_nodes(movieParse, "img")
 
 moviesImg
 ```
-### 4.  A Billboard Top 200 example
+### 4.  A Billboard Top 100 example
 
 The website [billboard.com](http://www.billboard.com)
-keeps track of top songs and albums from the music industry.
+keeps track of top songs, albums and artists from the music industry.
 
 
-One page lists the top 200 albums for a given week. We will extract these albums. In the source code, the songs are listed in headers:
-`<h2 class = "chart-row__song">Album Name </h2>`.
+One page lists the greatest hot women artists. In the source code, here is one artist's listing:
+`<div class="chart-list-item  " data-rank="24" data-artist="" data-title="Dionne Warwick" data-has-content="false">`.
 
-
-```{r}
-albumParse <- read_html("http://www.billboard.com/charts/billboard-200")
-
-albumNodes <- html_nodes(albumParse, "h2")
-
-albumNodes[1:10]
-```
-
-
-There are other entries with `<h2>` headers besides the top songs, so we must first detect the nodes of interest.
-
+(Note that the current number 1 entry, Madonna, is not listed in this format)
 
 ```{r}
-index <- str_detect(albumNodes, "chart-row__song")
-index[1:10]
+webParse <- read_html("https://www.billboard.com/charts/greatest-hot-100-women-artists")
+str(webParse)
 
-albums <- albumNodes[index]
-albums[1:10]
+webNodes <- html_nodes(webParse,".chart-list-item  " ) 
+webNodes
 ```
 
+We now need to extract the name of the artist, given in the `data-title` attribute:
+```{r}
+webNodes2 <- html_attr(webNodes, "data-title")
+webNodes2
+```
 
-Now, we just need to extract the album name which is placed between `<h2 ... >` and `</h2>`. We will use a regular expression to handle this.
-
+As we noted earlier, Madonna's entry was not listed in the same format as the others, so we will have to add her manually:
 
 ```{r}
-albums <- str_replace(albums, ".*\">(.+)</h2>","\\1")
-albums[1:10]
+top50women <- data.frame(top = c("Madonna", webNodes2))
+head(top50women, 5)
 ```
-
-In `str_replace`, we first match
-0 or more occurrences of any character followed by a ">. This is followed by one or more occurrences of any character---this is the (.+) portion of the regular expression, and finally followed by the `</h2>`. This expression will be replaced by what is in the (.+) portion of the regular expression---this is what the "\\1" argument is accomplishing.
-
 
 ### On Your Own
 
