@@ -9,7 +9,7 @@ output:
     fig_width: 5
 ---
 
-```{r,message = FALSE}
+```{r,message = FALSE, warning = FALSE}
 # load required packages
 library(maptools) # creates maps and work with spatial files
 library(broom)    # assists with tidy data
@@ -19,11 +19,11 @@ library(dplyr)    # joining data frames
 library(readr)    # quickly reads files into R
 ```
 
-Before working through this activity it is helpful to have some familiarity with `ggplot2 and making maps with ggplot2[[links needed]]`.
+Before working through this activity it is helpful to have some familiarity with our previous tutorials on [An Introduction to ggplot2](http://web.grinnell.edu/individuals/kuipers/stat2labs/RTutorials.html) and [Creating Maps with ggplot2](http://web.grinnell.edu/individuals/kuipers/stat2labs/RTutorials.html).
 
 ### 1. A brief introduction to shapefiles
 
-In the previous `Introduction to Creating Maps with ggplot2[[link needed]]`, we used a simplistic .CSV file that contained latitude, longitude and group information. However, in most cases, geographic information for maps is stored in a more complex format, commonly referred to as a shapefile. A shapefile consists of several component files. Not all components are needed, but each shapefile must have at least the following three component files:
+In the previous [Creating Maps with ggplot2](http://web.grinnell.edu/individuals/kuipers/stat2labs/RTutorials.html) tutorial, we used a simplistic .CSV file that contained latitude, longitude and group information. However, in most cases, geographic information for maps is stored in a more complex format, commonly referred to as a shapefile. A shapefile consists of several component files. Not all components are needed, but each shapefile must have at least the following three component files:
 
 - *.shp*: The main shape file. This file contains all the information needed to draw geographic features such as points, lines, and polygons.
 - *.shx*: The shape index file, which organizes the geometries in a way that is easily read by programs.
@@ -33,7 +33,7 @@ Shapefiles allow you to easily draw different polygons (i.e. countries, administ
 
 ### 2. Working with shapefiles in R
 
-**Data**: We will use a dataset based upon the [Global Terrorism Database](https://www.start.umd.edu/gtd/) which consists of all terrorist incidents from 1970-2013. This is a large file and may take a while to load. We will also use a shapefile of the world's state boundaries that was downloaded from the [Natural Earth website] (http//www.naturalearthdata.com/download/50m/cultural/ne_50m_admin_0_countries.zip). 
+**Data**: We will use a dataset based upon the [Global Terrorism Database](https://www.start.umd.edu/gtd/) which consists of all terrorist incidents from 1970-2013. This is a large file and may take a while to load. We will also use a shapefile of the world's state boundaries that was downloaded from the [Natural Earth website](https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2/).
 
 ```{r, warning=FALSE}
 # Reads the shapefile into the R workspace.
@@ -124,7 +124,7 @@ ggplot() +
 This graph does not show temporal information, or how terrorism changes through time. One way to implement this is to have multiple maps plotted in the same window by making use of the `facet` command. In the graph below we look at the number of terrorism incidents over time in the Republic of Ireland and the United Kingdom. 
 
 
-```{r}
+```{r fig.height = 5}
 # create a new terrorism data frame that includes only four years
 Incidents2 <- filter(TerrorismData, iyear == 1975 | iyear == 1985 | iyear == 1995 |iyear == 2005)
 
