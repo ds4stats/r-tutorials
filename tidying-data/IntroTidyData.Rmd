@@ -10,19 +10,20 @@ output:
 
 Data sets are stored in tabular format and there are many possible ways to organize tabular data. Some organizational schemes are designed to be easily read on the page (or screen), while others are designed to be easily used in analysis. In this tutorial, we focus on how a data set should be formatted for analysis in R.
 
-Make sure that the following packages are loaded
+Make sure that the following packages are loaded:
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyr)     # contains tools to tidy data
 library(ggformula) # for plotting
+library(readr)     # a package for parsing data
 ```
 
-and load in the example data sets
+then load in the example data sets
 
 ```{r}
-UBSprices <- read.csv("data/UBSprices.csv", as.is = TRUE)
-polls <- read.csv("data/rcp-polls.csv", na.strings = "--", as.is = TRUE)
-airlines <- read.csv("data/airline-safety.csv", as.is = TRUE)
+UBSprices <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/UBSprices.csv", as.is = TRUE)
+polls <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/rcp-polls.csv", na.strings = "--", as.is = TRUE)
+airlines <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/airline-safety.csv", as.is = TRUE)
 ```
 
 
@@ -37,7 +38,7 @@ In R, it is easiest to work with data that follow five basic rules:
 4. Values should not contain units. Rather, units should be specified in the supporting documentation for the data set, often called a *codebook*.
 5. There should be no extraneous information (footnotes, table titles, etc.).
 
-A data set satisfying these rules is said to be **tidy**, a term popularized by Hadley Wickham.
+A data set satisfying these rules is said to be **tidy**, a term popularized by [Hadley Wickham](http://hadley.nz/).
 
 
 **Remark**: Most of the time data that violate rules 4 and 5 are obviously not tidy, and there are easy ways to exclude footnotes and titles in spreadsheets by simply omitting the offending rows. This tutorial focuses on the "sneakier" form of untidiness that violates at least one of the first three rules.
@@ -52,26 +53,9 @@ Command      | Meaning
 `spread`     | creates multiple columns from two columns
 `separate`   | splits compound variables into individual columns
 
-<!-- ### Example A -->
-
-<!-- The Happy Planet Index (HPI) is an alternative measure of the well-being of people within countries that was developed by the New Economies Foundation. The `hpi` data set contains the most recent index and supporting data. -->
-
-<!-- The `hpi` data set is tidy because -->
-
-<!-- 1. Each variable is a column. -->
-<!-- 2. Each row corresponds to a single country (i.e., case).  -->
-<!-- 3. The values of the variables correspond to cells of the table. -->
-<!-- 4. Each cell only contain values of variables. -->
-<!-- 5. There are not titles, footnotes, etc. -->
-
-<!-- ```{r} -->
-<!-- head(hpi) -->
-<!-- ``` -->
-
-
 ### 2. Tidying longitudinal data (`gather`)
 
-UBS is an international bank that reports prices of various staples in major cities every three years. The data set in `UBSprices` data set contains prices of a 1 kg bag of rice in 2009 and 2003 in major world cities. The data set was extracted from the `alr4` R package.
+UBS is an international bank that reports prices of various staples in major cities every three years. The data set in the `UBSprices` data set contains prices of a 1 kg bag of rice in 2003 and 2009 in major world cities. The data set was extracted from the `alr4` R package.
 
 ```{r}
 head(UBSprices)
@@ -107,19 +91,19 @@ head(tidy_ubs)
 2) How many rows would there be if used the gather command and the original **UBSprices** data set had five columns of  years: `rice2003`, `rice2006`, `rice2009`, `rice2012`, and `rice2015`? 
 
 
-Finally, we need to modify the year column by removing the word rice from each cell.
-To do this, we can use the `extract_numeric` function in the `tidyr` package.
-We now have a data set that we can call tidy.
+To finish tidying these data, we need to modify the year column by removing the word rice from each cell.
+
+To do this, we can use the `parse_number` function in the `readr` package.  This function drops any non-numeric characters before or after the first number in a character string. We now have a data set that we can call tidy.
 
 
 ```{r}
-tidy_ubs$year <- extract_numeric(tidy_ubs$year)
+tidy_ubs$year <- parse_number(tidy_ubs$year)
 head(tidy_ubs)
 ```
 
 **Remark** 
 
-This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data is typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggformula` (see the tutorial IntroToGgplot).
+This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data are typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggformula` (we learn more about plotting data in the ggplot and ggformula tutorials).
 
 ```{r}
 tidy_ubs %>%
