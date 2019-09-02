@@ -115,7 +115,7 @@ This was straightforward since **tidy_ubs** was already tidy, but would have req
 
 ### 3. Tidying pollster data (`separate + gather`)
 
-The **polls** data set contains the results of various presidential polls conducted during July 2016, and was scraped from  [RealClear Politics](http://www.realclearpolitics.com/epolls/latest_polls/president/).
+The **polls** data set contains the results of various presidential polls conducted during July 2016, and was scraped from  [RealClear Politics](https://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton_vs_johnson_vs_stein-5952.html).
 
 ```{r}
 polls
@@ -125,7 +125,7 @@ polls
 Here, the data set is not tidy because
 
 * The `Date` column contains both the beginning and end dates. These should be stored in separate columns.
-* The `Sample` column contains two variables: the number of people in the sample and the population that was sampled (likely voters or registered voters). These should be stored in separate columns.
+* The `Sample` column contains two variables: the number of people in the sample and the population that was sampled, likely voters (LV) or registered voters (RV). These should be stored in separate columns.
 * The last four column names are values of `candidate` and `party` variables, which should be stored in their own columns. 
 
 To break a single <u>character</u> column into multiple new columns we use the `separate` function in the `tidyr` package.
@@ -139,7 +139,7 @@ tidy_polls
 
 **Remarks**
 
-<!-- * The first argument passed to `separate` is the name of the data frame to be tidied. -->
+* The first argument passed to `separate` is the name of the data frame to be tidied.
 * The second argument, `col`, specifies the name of the column to be split.
 * The third argument, `into`, specifies the names of the new columns. Note that  since these are specific column names we are creating, they should be given in quotes.
 * R will try to guess how the values should be separated by searching for non-alphanumeric values; however, if there are multiple non-alphanumeric values this may fail. In this example, if we did not specify that `sep = " - "`, then R would erroneously use `\` as the separator. To manually specify the separator between columns we can place the character(s) in quotes. 
@@ -209,7 +209,7 @@ head(tidy_airlines)
 ```
 
 
-Finally, we need to ensure that each row corresponds to a case. (Don't worry, this will also make each column a variable!) Currently, there are six rows for each airline: one for each `var` in each time frame. To solve this problem, we need to `spread` out the `var` column so that each variable has its own column.
+Finally, we need to ensure that each row corresponds to a case. Currently, there are six rows for each airline: one for each `var` in each time frame. To solve this problem, we need to `spread` out the `var` column so that each variable has its own column.
 
 ```{r}
 tidy_airlines <- spread(data = tidy_airlines, key = var, value = count)
@@ -226,9 +226,10 @@ Notice that the first argument given to `spread` is the data frame, followed by 
 
     Briefly explain why this is a tidy data set.
 
-2. The file `under5mortality.csv` contains the child mortality rate per 1,000 children born for each country from 1800 to 2015. (Source: https://www.gapminder.org/data/)
+2. The file `under5mortality.csv` (available at the url "https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/under5mortality.csv") contains the child mortality rate per 1,000 children born for each country from 1800 to 2015. (Source: https://www.gapminder.org/data/)
     a. Briefly describe why it is not considered to be tidy data and what changes need to be made to tidy it.
-    b. Use `gather` to create a tidy data set with columns `country`, `year` and `mortality`. Use `extract_numeric` to ensure that the `year` column is numeric.
+    b. Use `gather` to create a tidy data set with columns `country`, `year` and `mortality`. Use `parse_number` to ensure that the `year` column is numeric.
+
 
 3. The file `mlb2016.csv` contains the salary information presented by *USA Today* for all 862 players in Major League Baseball. (Source: http://www.usatoday.com/sports/mlb/salaries/2016/player/all/)
     a. Briefly describe why it is not considered to be tidy data and what changes need to be made to tidy it.
