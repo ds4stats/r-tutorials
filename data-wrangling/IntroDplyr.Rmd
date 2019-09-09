@@ -24,7 +24,7 @@ To begin, let's make sure that our data set and the `dplyr` package are loaded
 
 ```{r message=FALSE, warning=FALSE}
 # NOTE THAT IF YOU USE THE "read_csv" FUNCTION INSTEAD OF "read.csv" SOME COLUMN NAMES WILL BE CHANGED.
-colleges <- read.csv("data/colleges2015.csv")
+colleges <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/data-wrangling/data/colleges2015.csv")
 library(dplyr)
 ```
 
