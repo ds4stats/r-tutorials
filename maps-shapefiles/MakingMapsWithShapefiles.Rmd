@@ -4,13 +4,15 @@ output:
   html_document:
     fig_height: 2
     fig_width: 5
-  word_document:
-    fig_height: 2
-    fig_width: 5
 ---
 
 ```{r,message = FALSE, warning = FALSE}
 # load required packages
+	#install.packages("leaflet")
+#install.packages("maptools")
+#install.packages("scales")
+#install.packages("rgdal")
+library(rgdal)    # Updates deprecated maptools functions
 library(maptools) # creates maps and work with spatial files
 library(broom)    # assists with tidy data
 library(ggplot2)  # graphics package
@@ -35,11 +37,13 @@ Shapefiles allow you to easily draw different polygons (i.e. countries, administ
 
 **Data**: We will use a dataset based upon the [Global Terrorism Database](https://www.start.umd.edu/gtd/) which consists of all terrorist incidents from 1970-2013. This is a large file and may take a while to load. We will also use a shapefile of the world's state boundaries that was downloaded from the [Natural Earth website](https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2/).
 
+**Note**: You must download the "ne_50m_admin_0_countries" folder and update the file path to indicate its location for this code to run:
+
 ```{r, warning=FALSE}
 # Reads the shapefile into the R workspace.
-TerrorismData <- read_csv("data/terrorismData.csv")
+TerrorismData <- read_csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/maps-shapefiles/data/terrorismData.csv")
 
-Worldshapes <- readShapeSpatial("data/ne_50m_admin_0_countries")
+Worldshapes<- readOGR(dsn = "C:/Users/Ryan M/Documents/Grinnell/ne_50m_admin_0_countries", layer = "ne_50m_admin_0_countries")
 
 str(Worldshapes, max.level = 2)
 ```
@@ -63,7 +67,7 @@ The `worldshapes@data` file containes 241 rows and 63 columns describing aspects
 We can use `ggplot2` to draw maps using shapefiles. However, `ggplot2` on its own cannot read shapefiles directly -- the shapefile must first be converted to a data frame. We can convert a spatial object to a data frame with the `tidy` function from the `broom` package.
 
 
-```{r  message = FALSE}
+```{r  message = FALSE, warning= FALSE}
 Worldshapes_tidied <- tidy(Worldshapes)
 
 g <- ggplot() +
@@ -110,7 +114,7 @@ ggplot() +
         color = "black") + 
       scale_fill_continuous(name="Population(millions)",limits = c(0,4000),
         breaks=c(1000,2000,3000), 
-        low = "white", high = "darkblue")
+        low = "white", high = "darkblue")+
       geom_point(data = IncidentsIn1984, 
         aes(x = longitude, y = latitude), 
         size = 1, color = "red")
@@ -168,7 +172,7 @@ If you are using electronic handouts or websites, you may want to be able to zoo
 
 Below is some code which renders terrorist incidents in Europe using the `leaflet` package. Note that the code does run within Rstudio, but a graphic cannot be posted to a knitted HTML or word document.
 
-```{r eval = FALSE}
+```{r eval = TRUE}
 library(leaflet)
 
 # Subset terrorism database to only contain events in Europe in 1984
