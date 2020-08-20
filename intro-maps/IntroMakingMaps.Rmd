@@ -4,7 +4,7 @@ output:
   html_document:
     fig_height: 2
     fig_width: 4
-  word_document: default
+  pdf_document: default
 ---
 
 ### 1. Introduction
@@ -14,6 +14,7 @@ We start by using requiring three packages, `ggplot2`, `dplyr`, and `maps`. The 
 
 
 ```{r message = FALSE}
+#install.packages("maps")
 library(ggplot2)  # The grammar of graphics package
 library(maps)     # Provides latitude and longitude data for various maps
 library(dplyr)    # To assist with cleaning and organizing data
@@ -27,7 +28,7 @@ library(dplyr)    # To assist with cleaning and organizing data
 MainStates <- map_data("state")
 
 # read the state population data
-StatePopulation <- read.csv("data/StatePopulation.csv", as.is = TRUE)
+StatePopulation <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/intro-maps/data/StatePopulation.csv", as.is = TRUE)
 # str(MainStates)
 # str(StatePopulation)
 ```
@@ -52,18 +53,6 @@ On page two of the [maps package documentation](https://cran.r-project.org/web/p
 
 3) Notice that the **MainStates** file has a column titled "group". What happens to your base map when group is ignored (i.e. run the code `ggplot() + geom_polygon( data=MainStates, aes(x=long, y=lat))`)?
 
-
-```{r eval=FALSE, echo=FALSE}
-# SAMPLE SOLUTIONS
-AllCounty <- map_data("county")
-ggplot() + geom_polygon( data=AllCounty, aes(x=long, y=lat, group=group),
-        color="black", fill="lightblue")
-   
-AllWorld <- map_data("world")
-ggplot() + geom_polygon( data=AllWorld, aes(x=long, y=lat, group=group), color="white", fill="darkblue" )
-
-ggplot() + geom_polygon( data=MainStates, aes(x=long, y=lat))
-```
 
 ### 3. Customizing your choropleth map
 
@@ -110,24 +99,6 @@ p
 5) Create a choropleth map showing state populations. Make the state borders purple with size = 1. Also change the color scale for state populations, with low populations colored white and states with high populations colored dark red. 
 
 6) Modify the graph and legend in Question 5) to show the log of populations instead of the population in millions. In this map, explain why you will need to set new `limits` and `breaks`. *Hint: create a map without setting specific `limits` and `breaks` values. How does the graph change?*
-
-
-```{r eval=FALSE, echo=FALSE}
-# SAMPLE  SOLUTIONS
-#Question 5
-g <- ggplot()
-g <- g + geom_polygon( data=MergedStates, aes(x=long, y=lat, group=group, fill   = population/1000000), color="purple", size = 1) 
-
-g <- g + scale_fill_continuous(name="Population(in millions)", low = "white", high = "darkred",limits = c(0,40), breaks=c(5,10,15,20,25,30,35), na.value = "grey50")
-g
-
-# Question 6
-g <- ggplot()
-g <- g + geom_polygon( data=MergedStates, aes(x=long, y=lat, group=group, fill   = log(population)), color="purple", size = 1) 
-
-g <- g + scale_fill_continuous(name="log(population)", low = "white", high = "darkred", na.value = "grey50")
-g
-```
 
 The following code provides just a few more examples of how each map can be customized. The [ggplot2 website](http://docs.ggplot2.org/current/) and the [Data Visualization Cheat Sheet](https://www.rstudio.com/resources/cheatsheets/) provides many additional detailed examples.
 
@@ -199,28 +170,12 @@ g
 
 ### 5. On your own
 
-* Restrict the `states` and `all.cities` files to only a few contiguous states, such as New York, Vermont,  New Hampshire, Massachusetts, Rhode Island, and Connecticut. You could use the following code:
+Make one MAP following the points below:
 
-
-```{r eval=FALSE}
-      NewStates <- filter(MainStates,region ==  "new york" | region ==
-                   "vermont" | region ==  "new hampshire" | region ==
-                   "massachusetts" | region ==  "rhode island" | 
-                    region ==  "connecticut" )
-                   
-```
-
+* Restrict the `states` and `all.cities` files to only a few contiguous states, such as New York, Vermont, New Hampshire, Massachusetts, Rhode Island, and Connecticut.
 * Create a map of these states and color each state by the number of electorial votes in that state.
 * Add a point to represent each city in these states.
-* Color the cities so that state capitals are clearly differentiated from other cities. In the `geom_point` you may want to use the following code:
-
-```{r eval=FALSE}
-      g <- g + geom_point(data=MainCities, aes(x=long, y=lat, 
-                    size = pop/1000000, color=factor(capital), shape = factor(capital)), 
-                    alpha = .5) + 
-  
-              scale_size(name="City Population")
-```
+* Color the cities so that state capitals are clearly differentiated from other cities.
 
 ### Additional Resources
 
