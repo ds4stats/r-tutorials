@@ -4,9 +4,6 @@ output:
   html_document:
     fig_height: 2
     fig_width: 5
-  word_document:
-    fig_height: 2
-    fig_width: 5
 ---
 
 ### 1. Introduction
