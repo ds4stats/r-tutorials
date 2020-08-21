@@ -2,7 +2,6 @@
 title: "Introduction to Merging Data Tables in R"
 output:
   html_document: default
-  pdf_document: default
   word_document: default
 ---
 
@@ -29,12 +28,12 @@ library(dplyr)
 To illustrate the different `join` functions we will use a small example of a customer database. We will focus on two tables: **orders** which contains the order number, customer ID, and date of the order; and **customers** which contains the customer ID and customer name. These are intentionally small data tables so that is easier to see how the `join` statements are working.
 
 ```{r}
-orders <- read.csv("data/orders.csv", as.is = TRUE)
+orders <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/merging/data/orders.csv", as.is = TRUE)
 orders
 ```
 
 ```{r}
-customers <- read.csv("data/customers.csv", as.is = TRUE)
+customers <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/merging/data/customers.csv", as.is = TRUE)
 customers
 ```
 
@@ -206,7 +205,12 @@ In this situtaion, the results for `left_join`, `right_join`, and `full_join` wi
 
 ### 4. On Your Own
 
-The files `books.csv`, `authors.csv`, and `book-authors.csv` give details about the planned summer reading of a statistics student. `books.csv` provides details for each book (isbn, title, year, and genre), `authors.csv` provides details about each author (authorid, first name, last name, and nationality), and `book-authors.csv` provides the author identification (`authorid`) for each isbn (books with multiple authors will have multiple rows).
+#### Option #1
+The files `books.csv`, `authors.csv`, and `book-authors.csv` give details about the planned summer reading of a statistics student. You can find the files at:
+- https://raw.githubusercontent.com/ds4stats/r-tutorials/master/merging/data/books.csv 
+- https://raw.githubusercontent.com/ds4stats/r-tutorials/master/merging/data/authors.csv 
+- https://raw.githubusercontent.com/ds4stats/r-tutorials/master/merging/data/book-authors.csv
+`books.csv` provides details for each book (isbn, title, year, and genre), `authors.csv` provides details about each author (authorid, first name, last name, and nationality), and `book-authors.csv` provides the author identification (`authorid`) for each isbn (books with multiple authors will have multiple rows).
 
 1. Read the three files into R, naming them **books**, **authors**, and **book_authors**.
 
@@ -227,10 +231,28 @@ The files `books.csv`, `authors.csv`, and `book-authors.csv` give details about 
 5. Are there any authors in the **authors** data table that do not correspond to books in the **books** data table? Use an appropriate join statement to do this.
 
 
-6. After reading *A Game of Thrones* the student decides to read the rest of the series over the summer. `books2.csv` contains the updated books on the student's reading list. Read this file into R, naming it **books2**.
+6. After reading *A Game of Thrones* the student decides to read the rest of the series over the summer. `books2.csv` (available at https://raw.githubusercontent.com/ds4stats/r-tutorials/master/merging/data/books2.csv) contains the updated books on the student's reading list. Read this file into R, naming it **books2**.
 
 
 7. Use the same join statement that you did in #4, but using **books2** rather than **books**.
+
+	#### Option #2
+The package "Lahman" contains a comprehensive baseball database with 24 different tables.
+```{r}
+#install.packages("Lahman")
+#library(Lahman)
+#LahmanData
+```
+The database is structured such that several ID variables can be used to link the various tables; examples include the variables playerID and teamID.
+```{r}
+#head(AllstarFull)
+#head(Batting)
+#head(Master)
+```
+A. The "Master" table contains one row for each unique player in the database. To simplify things a bit, create a new data.frame named "players" which only contains the playerID, nameFirst, and nameLast variables.
+B. Interestingly, a number of players do not have salary data. Use the appropriate join to create a new data.frame "no_salary" containing players without an entry in the "Salary" table. Use the commands head(no_salary), tail(no_salary), and dim(no_salary) to display your results.
+C. Is it possible that the unsalaried players didn't participate in a game with their team and that is why they did not earn a salary?  How many of the unsalaried players do not have an entry in the "Appearances" table?
+D. Is it possible that the unsalaried players did not actually play in games they appeared in? Use the appropriate joins and dplyr commands to create a new data.frame "non_salary_atbats" that contains each player id and their total number of at bats, use na.rm to remove missing data when summarizing.  Use the commands head(non_salary_atbats), tail(non_salary_atbats), and dim(non_salary_atbats) to display your results.
 
 
 
@@ -240,3 +262,5 @@ The files `books.csv`, `authors.csv`, and `book-authors.csv` give details about 
 * [RStudio's data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) provides a nice summary of how to combine data sets.
 
 * [`dplyr` vignette on two table verbs](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html) provides additional examples of merging data tables.
+
+* [William Surles course on joining using dplyr, it contains several extra commands and examples ](https://rpubs.com/williamsurles/293454)
