@@ -23,8 +23,8 @@ In this example we will explore how to use each of these functions, as well as h
 To begin, let's make sure that our data set and the `dplyr` package are loaded
 
 ```{r message=FALSE, warning=FALSE}
-# NOTE THAT IF YOU USE THE "read_csv" FUNCTION INSTEAD OF "read.csv" SOME COLUMN NAMES WILL BE CHANGED.
 colleges <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/data-wrangling/data/colleges2015.csv")
+#install.packages("dplyr")
 library(dplyr)
 ```
 
@@ -303,12 +303,28 @@ head(colleges_by_state)
 
 ### 8. On Your Own
 
+#### Option #1 (Questions 1 - 5)
+
 1. Filter the rows for colleges in Great Lakes or Plains regions.
-2. Arrange the subset from part #1 to reveal what school has the highest first-year retention rate in this reduced data set.
-3. Arrange the subset from part #1 to reveal what school has the lowest admissions rate in this reduced data set.
+2. Arrange the subset from question #1 to reveal what school has the highest first-year retention rate in this reduced data set.
+3. Arrange the subset from question #1 to reveal what school has the lowest admissions rate in this reduced data set.
 4. Using the full data set, create a column giving the cumulative average cost of attendance, assuming that students finish in four years and that costs increase 3% per year. Name this new column `total.avg.cost4`.
 5. Using the full data set, summarize the distribution of total cost of attendance by region using the five number summary. Briefly describe any differences in total cost that you observe.
 
+
+#### Option #2 (Questions 6 and 7)
+The package "nycflights13" contains data on all 336,776 flights that departed from New York City in 2013, the data comes from the US Bureau of Transportation Statistics.  For all questions 6 and 7 you should ignore (exclude) any missing data using "na.rm" whenever applicable.
+```{r}
+#install.packages("nycflights13")
+#library(nycflights13)
+#dim(flights)
+#head(flights)
+```
+6. For this question, suppose we are interested in determining which carriers are most reliable when it comes to reaching the destination on time. For each carrier, report:
+- The proportion of its flights that arrived late (positive arr_delay)
+- The average number of minutes late that the carrier was *for its flights that arrived late*
+- The average "relative lateness"" of the carrier *for its flights that arrived late*. Note that relative lateness refers to how many minutes late a flight was relative to how long the flight took. For example, a flight that is 4 hours long and 5 minutes late (2.1% late) is "later" than a flight that is 2 hours long and 2 minutes late (4.2% late)
+7. For this question, suppose we are interested in determining whether or not the pilots of flights that depart late tend to try to make up for lost time by flying faster. To do so, write code that finds the average air speed (in miles per hour) of late departing and early/on-time departing flights. Also, include 2-3 sentences discussing whether you believe that this analysis adequetely answers the question, or if there are other details (such as obvious confounding variables) that should be explored before making a definitive conclusion.
 
 ### 9. Additional Resources
 
