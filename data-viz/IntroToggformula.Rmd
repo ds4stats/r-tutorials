@@ -1,10 +1,6 @@
 ---
 title: "Creating Graphs with ggformula"
 output:
-  word_document:
-    fig_height: 2
-    fig_width: 5
-  pdf_document: default
   html_document:
     fig_height: 2
     fig_width: 5
@@ -25,7 +21,7 @@ library(mosaic)
 
 ```{r message = FALSE, warning = FALSE}
 # The csv file should be imported into RStudio:
-AmesHousing <- read.csv("data/AmesHousing.csv")
+AmesHousing <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/data-viz/data/AmesHousing.csv")
 # str(AmesHousing)
 ```
 
