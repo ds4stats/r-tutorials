@@ -4,9 +4,6 @@ output:
   html_document:
     fig_height: 2
     fig_width: 5
-  word_document:
-    fig_height: 2
-    fig_width: 5
 ---
 
 ### 1. Introduction
@@ -28,38 +25,38 @@ library(mosaic)
 
 ```{r}
 # The csv file should be imported into rstudio:
-AmesHousing <- read.csv("data/AmesHousing.csv")
+AmesHousing <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/data-viz/data/AmesHousing.csv")
 # str(AmesHousing)
 ```
 
 ### 2. The `qplot` function
 
-In this section, we will briefly provide examples of how the `qplot` function can be used to create basic graphs. Run the code below and answer Questions 1)-5).
+In this section, we will briefly provide examples of how the `qplot` function (quick plot) can be used to quickly create basic graphs. Run the code below and answer Questions 1)-5).
 
 ```{r eval=FALSE}
 # Create a histogram of housing prices
 qplot(data=AmesHousing, x=SalePrice, main ="Histogram of Housing Prices in Ames, Iowa")
 
 # Create a scatterplot of above ground living area by sales price
-qplot(data=AmesHousing,x=Gr.Liv.Area, y=SalePrice)
+qplot(data=AmesHousing,x=GrLivArea, y=SalePrice)
 
 # Create a scatterplot with log transformed variables, coloring by a third variable
-qplot(data=AmesHousing,x=log(Gr.Liv.Area),y=log(SalePrice),color=Kitchen.Qual)
+qplot(data=AmesHousing,x=log(GrLivArea),y=log(SalePrice),color=KitchenQual)
 
 # Create distinct scatterplots for each type of kitchen quality and number of fireplaces
-qplot(data=AmesHousing,x=Gr.Liv.Area,y=SalePrice,facets=Kitchen.Qual~Fireplaces)
+qplot(data=AmesHousing,x=GrLivArea,y=SalePrice,facets=KitchenQual~Fireplaces)
 
 # Create a dotplot of sale prices by kitchen quality
-qplot(data=AmesHousing,x=Kitchen.Qual,y=SalePrice)
+qplot(data=AmesHousing,x=KitchenQual,y=SalePrice)
 
 # Create a boxplot of sale prices by kitchen quality
-qplot(data=AmesHousing,x=Kitchen.Qual,y=log(SalePrice),geom="boxplot")
+qplot(data=AmesHousing,x=KitchenQual,y=log(SalePrice),geom="boxplot")
 ```
 
 **Questions**:  
 
 1) In this dataset, how many houses were sold with four fireplaces?
-2) What is the `facet` argument used for?
+2) What is the `facets` argument used for?
 3) Based upon the data documentation, what are the five different levels for kitchen quality?
 4) Do these graphs indicate that the quality of a kitchen could be related to the sale price?
 5) In the RStudio console, type `?qplot`. Modify the above code to create a barchart (`geom=bar`) to count the number of sales for each level of kitchen quality. What is the deference between the color and fill command?
@@ -78,7 +75,7 @@ Thus the simplest code for a graphic made with `ggplot()` would have one of the 
 * `ggplot(data, aes(x, y)) + geom_line()` or 
 * `ggplot(data) + geom_line(aes(x, y))`. 
 
-Note the two lines of code above would provide identical results. In the first case, the `aes` is set as the default for all `geoms`. In essense, the same `x` and `y` variables are used throughout the entire graphic. However, as graphics get more complex, it is often best to creating local `aes` mappings for each `geom` as shown in the second line of code.
+Note that the two lines of code above would provide identical results. In the first case, the `aes` is set as the default for all `geoms`. In essense, the same `x` and `y` variables are used throughout the entire graphic. However, as graphics get more complex, it is often best to creating local `aes` mappings for each `geom` as shown in the second line of code.
 
 ```{r message=FALSE}
 # Create a histogram of housing prices
@@ -90,18 +87,18 @@ In the above code, the terms `data=` and `mapping=` are not required, but are us
 
 ```{r message=FALSE}
 # Create a scatterplot of above ground living area by sales price
-ggplot(data=AmesHousing) + geom_point(mapping= aes(x=Gr.Liv.Area, y=SalePrice))
+ggplot(data=AmesHousing) + geom_point(mapping= aes(x=GrLivArea, y=SalePrice))
 ```
 
 **Questions:**  
 
-6) Modify the code for histogram above so that the `aes` is not within the `geom`. However the resulting graph should look identical to the one above.
+6) Modify the code for the scatter plot above so that the `aes` is not within the `geom`. The resulting graph should look identical to the one above.
 7) Create a scatterplot using `ggplot` with **Fireplaces** as the x-axis and **SalePrice** as the y-axis.
 
 
 ### 4. Customizing graphics using the `ggplot` function
 
-In the following code, we layer additional components onto the two graphs shown above.
+In the following code, we layer additional components onto the two graphs (the histogram and scatter plot) shown above.
 
 ```{r}
 ggplot(data=AmesHousing) +                         
@@ -114,30 +111,30 @@ ggplot(data=AmesHousing) +
 
 **Remarks:**
 
-* The histogram geom transforms the SalePrice, modifies the bin size and changes the color.
+* The arguments used in `geom_histogram` re-scale the SalePrice, modify the bin size, and change the color/ fill.
 * `geom_density` overlays a density curve on top of the histogram.
 * Typically density curves and histrograms have very different scales, here we use `y = (..count..)` to modify the density. Alternatively, we could specify `aes(x = SalePrice/100000, y = (..density..))` in the histogram geom.
-* The labs() command adds a title and an x-axis label. A y-axis label can also be added by using `y = " ".
+* The labs() command adds labels to the graph, in this case a title and an x-axis label. A y-axis label can also be added by using `y = " ".
 
 
 In the code below we create three scatterplots of the log of the above ground living area by the log of sales price
 
 ```{r}
-ggplot(data=AmesHousing, aes(x=log(Gr.Liv.Area), y=log(SalePrice)) ) +      
+ggplot(data=AmesHousing, aes(x=log(GrLivArea), y=log(SalePrice)) ) +      
   geom_point(shape = 3, color = "darkgreen") +                                     
   geom_smooth(method=lm,  color="green") +                  
   labs(title="Figure 10: Housing Prices in Ames, Iowa")
 
  
 ggplot(data=AmesHousing) + 
-  geom_point(aes(x=log(Gr.Liv.Area), y=log(SalePrice), color=Kitchen.Qual),shape=2, size=2) + 
-  geom_smooth(aes(x=log(Gr.Liv.Area), y=log(SalePrice), color=Kitchen.Qual), 
+  geom_point(aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual),shape=2, size=2) + 
+  geom_smooth(aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual), 
           method=loess, size=1) +                        
   labs(title="Figure 11: Housing Prices in Ames, Iowa") 
 
 ggplot(data=AmesHousing) +
-  geom_point(mapping = aes(x=log(Gr.Liv.Area), y=log(SalePrice), color=Kitchen.Qual)) +
-  geom_smooth(mapping = aes(x=log(Gr.Liv.Area), y=log(SalePrice), color=Kitchen.Qual), 
+  geom_point(mapping = aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual)) +
+  geom_smooth(mapping = aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual), 
       method=lm, se=FALSE, fullrange=TRUE) +                             
   facet_grid(. ~ Fireplaces) +                      
   labs(title="Figure 12: Housing Prices in Ames, Iowa")
@@ -145,10 +142,10 @@ ggplot(data=AmesHousing) +
 
 **Remarks:**
 
-* `geom_point` is used to create a scatterplot. As shown in Figure 10, multiple shapes can be used as points. The [Data Visualization Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) lists several shape options`
+* `geom_point` is used to create a scatterplot. As shown in Figure 10, multiple shapes can be used as points. The [Data Visualization Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) lists several shape options.
 * `geom_smooth` adds a fitted line through the data.  
-    + `method=lm` specifies a linear regression line. `method=loess` creates a smooth fit curve.
-    + `se=FALSE` removes the shaded confidence regions around each line. 
+    + `method=lm` specifies a linear regression line. `method=loess` creates a [smoothed local regression curve](https://en.wikipedia.org/wiki/Local_regression).
+    + `se=FALSE` removes the shaded 95% confidence regions around each line. The additional option `level` can change the confidence level.
     + `fullrange=TRUE` extends all regression lines to the same length
 *  `facet_grid` and `facet_wrap` commands are used to create multiple plots. In Figure 12, we have created separate scatterplots based upon the number of fireplaces.
 *  When assigning fixed characteristics, (such as `color`, `shape` or `size`), the commands occur outside the `aes`, as in Figure 10, `color="green"`. When characteristics are dependent on the data, the command should occur within the `aes`, such as in Figure 11 `color=Kitchen.Qual`.
@@ -159,25 +156,25 @@ In the above examples, only a few `geoms` are listed. The [ggplot2 website](http
 
 **Questions:**  
 
-8) Create a histogram of the above ground living area, `Gr.Liv.Area`.
-9) Create a scatterplot using `Year.Built` as the explanatory variable and `SalePrice` as the response variable. Include a regression line, a title, and labels for the x and y axes.
-10) Modify the scatterplot in Question 9) so that there is still only one regression line, but the points are colored by the overall condition of the home, `Overall.Cond`. 
+8) Create a histogram of the above ground living area, `GrLivArea`.
+9) Create a scatterplot using `YearBuilt` as the explanatory variable and `SalePrice` as the response variable. Include a regression line, a title, and labels for the x and y axes.
+10) Modify the scatterplot in Question 9) so that there is still only one regression line, but the points are colored by the overall condition of the home, `OverallCond`. 
 
 
 ```{r eval=FALSE, echo=FALSE}
 # SAMPLE  SOLUTIONS
 # A histogram of above ground living area 
 ggplot(data=AmesHousing) +                         
-  geom_histogram(mapping = aes(Gr.Liv.Area))
+  geom_histogram(mapping = aes(GrLivArea))
 
 # Create a scatterplot of above ground living area by sales price
-ggplot(data=AmesHousing, aes(x=Year.Built, y=SalePrice)) +      
+ggplot(data=AmesHousing, aes(x=YearBuilt, y=SalePrice)) +      
   geom_point() +
   geom_smooth(method=lm) +                  
   labs(title="Housing Prices in Ames, Iowa", x="Year Built", y = "Sale Price")
 
 # Create scatterplot and regression lines colored by the kitchen quality rating
-ggplot(data=AmesHousing, aes(x=Year.Built, y=SalePrice, color=Overall.Qual)) + 
+ggplot(data=AmesHousing, aes(x=YearBuilt, y=SalePrice, color=OverallQual)) + 
   geom_point() +                               
   geom_smooth(method=lm, se=FALSE) +                        
   labs(title="Housing Prices in Ames, Iowa", x="Year Built", y = "Sale Price")
@@ -227,7 +224,7 @@ ggplot(data=AmesHousing2) +
 **Customizing graphs:** In addition to using a **data frame**, **geoms**, and **aes**, several additional components can be added to customize each graph, such as: **stats**, **scales**, **themes**, **positions**, **coordinate systems**, **labels**, and **legends**. We will not discuss all of these components here, but the materials in the references section provide detailed explanations. In the code below we provide a few examples on how to customize graphs.
 
 ```{r warning =FALSE}
-ggplot(AmesHousing2, aes(x = Fireplace2, y = SalePrice, color = Paved.Drive)) +
+ggplot(AmesHousing2, aes(x = Fireplace2, y = SalePrice, color = PavedDrive)) +
   geom_boxplot(position = position_dodge(width = 1)) +
   coord_flip()+ 
   labs(title="Housing Prices in Ames, Iowa") +
@@ -253,12 +250,31 @@ ggplot(AmesHousing2, aes(x = Fireplace2, y = SalePrice, color = Paved.Drive)) +
 
 ### 7. On your own
 
-In order to complete this activity, you will need to use the `dplyr` package to manipulate the dataset before making any graphics.
+For this activity, you should use the `dplyr` package to manipulate the dataset before making any graphics.
 
-* Restrict the `AmesHousing` data to only sales under normal conditions. In other words, `Condition.1 == Norm`
-* Create a new variable called `TotalSqFt = GR.Liv.Area  +  Total.Bsmt.SF` and remove any homes with more than 3000 total square feet.
+#### Option #1 (there is no second option this time, but I encourage you to do the "More Practice" question)
+
+* Restrict the `AmesHousing` data to only sales under normal conditions. In other words, `Condition1 == Norm`
+* Create a new variable called `TotalSqFt = GRLivArea  +  TotalBsmtSF` and remove any homes with more than 3000 total square feet.
 * Create a new variable, where `No` indicates no fireplaces in the home and `Yes` indicates at least one fireplace in the home.
-* With this modified data file, create a graphic involving no more than three explanatory variables that best portrays how to predict sales price. For example, Figure 12 uses a linear model of kitchen quality, above ground square footage, and number of fireplaces to predict sale price.
+* Create any other new variables you believe to be informative.
+* With this modified data file, create a graphic involving no more than three explanatory variables that best portrays how to predict sales price. For example, Figure 12 uses a linear model of kitchen quality, above ground square footage, and number of fireplaces to predict sale price. Another example is the figure in the **Customizing graphs** section, which uses the fireplaces and paved driveway to predict sale price.
+* In addition to submitting your graphic, you should also submit a paragraph explaining what your graph shows and a short justification of the choices you made. Your graphic uses a newly created, derived variable, you should include an explanation of what that variable is.
+
+#### More Practice
+
+The data "economics" is included in the `ggplot2` package (see the documentation [provided here](https://ggplot2.tidyverse.org/reference/economics.html) for descriptions of the variables).  
+
+```{r}
+data("economics")
+head(economics)
+```
+
+For this question I'd like you to create two line graphs using `facet_grid` or `facet_wrap` showing the yearly mean of two different variables. You may choose any two variables from the economics data (other than date) that you find interesting.  Your graphs should display the *yearly mean* of those variables, and be colored according to the president in office that year. The code below provides the necessary presidential data, which you should merge with the economics data.
+
+```{r}
+presidents <- data.frame(year = 1967:2015, president = c(rep("Johnson",2), rep("Nixon", 5), rep("Ford", 3), rep("Carter", 4), rep("Reagan", 8), rep("Bush1", 4), rep("Clinton", 8), rep("Bush2", 8), rep("Obama", 7)))
+```
 
 ### Additional resources
 - https://www.youtube.com/watch?v=HeqHMM4ziXA and https://www.youtube.com/watch?v=n8kYa9vu1l8: Two introductory videos on ggplot2 by Roger Peng.
