@@ -43,7 +43,7 @@ Shapefiles allow you to easily draw different polygons (i.e. countries, administ
 # Reads the shapefile into the R workspace.
 TerrorismData <- read_csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/maps-shapefiles/data/terrorismData.csv")
 
-Worldshapes<- readOGR(dsn = "C:/Users/Ryan M/Documents/Grinnell/ne_50m_admin_0_countries", layer = "ne_50m_admin_0_countries")
+Worldshapes<- readShapeSpatial(data/ne_50m_admin_0_countries)
 
 str(Worldshapes, max.level = 2)
 ```
