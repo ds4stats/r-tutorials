@@ -8,17 +8,20 @@ output:
     fig_width: 5
 ---
 
-Data sets are stored in tabular format and there are many possible ways to organize tabular data. Some organizational schemes are designed to be easily read on the page (or screen), while others are designed to be easily used in analysis. In this tutorial, we focus on how a data set should be formatted for analysis in R.
+Data sets are stored in tabular format and there are many possible ways to organize tabular data. Some organizational schemes are designed to be easily read on the page (or screen), while others are designed to be easily used in analysis. In this tutorial, we focus on how a data set should be formatted for analysis in `R`.
 
-Make sure that the following packages are loaded:
+Make sure that the following packages are loaded
 
 ```{r, warning=FALSE, message=FALSE}
+#install.packages("tidyr")
+#install.packages("ggplot2")
+#install.packages("readr")
 library(tidyr)     # contains tools to tidy data
-library(ggformula) # for plotting
+library(ggplot2) # for plotting
 library(readr)     # a package for parsing data
 ```
 
-then load in the example data sets
+and load in the example data sets
 
 ```{r}
 UBSprices <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/UBSprices.csv", as.is = TRUE)
@@ -52,6 +55,18 @@ Command      | Meaning
 `gather`     | collapses multiple columns into two columns
 `spread`     | creates multiple columns from two columns
 `separate`   | splits compound variables into individual columns
+
+<!-- ### Example A -->
+<!-- The Happy Planet Index (HPI) is an alternative measure of the well-being of people within countries that was developed by the New Economies Foundation. The `hpi` data set contains the most recent index and supporting data. -->
+<!-- The `hpi` data set is tidy because -->
+<!-- 1. Each variable is a column. -->
+<!-- 2. Each row corresponds to a single country (i.e., case).  -->
+<!-- 3. The values of the variables correspond to cells of the table. -->
+<!-- 4. Each cell only contain values of variables. -->
+<!-- 5. There are not titles, footnotes, etc. -->
+<!-- ```{r} -->
+<!-- head(hpi) -->
+<!-- ``` -->
 
 ### 2. Tidying longitudinal data (`gather`)
 
@@ -103,19 +118,17 @@ head(tidy_ubs)
 
 **Remark** 
 
-This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data are typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggformula` (we learn more about plotting data in the ggplot and ggformula tutorials).
+This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data are typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggplot2` (we learn more about plotting data in the ggplot and ggformula tutorials).
 
 ```{r}
-tidy_ubs %>%
-  gf_boxplot(price ~ factor(year)) %>%
-  gf_labs(x = "year")
+qplot(data=tidy_ubs, x= factor(year), y=price, geom="boxplot")
 ```
 
 This was straightforward since **tidy_ubs** was already tidy, but would have required extra manipulation in the original format. 
 
 ### 3. Tidying pollster data (`separate + gather`)
 
-The **polls** data set contains the results of various presidential polls conducted during July 2016, and was scraped from  [RealClear Politics](https://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton_vs_johnson_vs_stein-5952.html).
+The **polls** data set contains the results of various presidential polls conducted during July 2016, and was scraped from  [RealClear Politics](http://www.realclearpolitics.com/epolls/latest_polls/president/).
 
 ```{r}
 polls
@@ -138,8 +151,9 @@ tidy_polls
 ```
 
 **Remarks**
-
+<!-- 
 * The first argument passed to `separate` is the name of the data frame to be tidied.
+-->
 * The second argument, `col`, specifies the name of the column to be split.
 * The third argument, `into`, specifies the names of the new columns. Note that  since these are specific column names we are creating, they should be given in quotes.
 * R will try to guess how the values should be separated by searching for non-alphanumeric values; however, if there are multiple non-alphanumeric values this may fail. In this example, if we did not specify that `sep = " - "`, then R would erroneously use `\` as the separator. To manually specify the separator between columns we can place the character(s) in quotes. 
@@ -209,7 +223,7 @@ head(tidy_airlines)
 ```
 
 
-Finally, we need to ensure that each row corresponds to a case. Currently, there are six rows for each airline: one for each `var` in each time frame. To solve this problem, we need to `spread` out the `var` column so that each variable has its own column.
+Finally, we need to ensure that each row corresponds to a case. (Don't worry, this will also make each column a variable!) Currently, there are six rows for each airline: one for each `var` in each time frame. To solve this problem, we need to `spread` out the `var` column so that each variable has its own column.
 
 ```{r}
 tidy_airlines <- spread(data = tidy_airlines, key = var, value = count)
@@ -221,25 +235,36 @@ head(tidy_airlines)
 Notice that the first argument given to `spread` is the data frame, followed by the key-value pair. The key is the name of the column whose values will be used as column headings and the value is the name of the column whose values will populate the cells of the new columns. In this example, we use `var` as the key and populate the cells with the `count`.
 
 ### 5. On Your Own
-
-1. The file `daily_show_guests.csv` contains information on every guest Jon Stewart ever had on *The Daily Show*. (Source: https://github.com/fivethirtyeight/data/tree/master/daily-show-guests) 
-
-    Briefly explain why this is a tidy data set.
+#### Option #1 (Questions 1 - 4)
+1. The file `daily_show_guests.csv` (available at the url "https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/daily_show_guests.csv") contains information on every guest Jon Stewart ever had on *The Daily Show*. (Source: https://github.com/fivethirtyeight/data/tree/master/daily-show-guests) 
+    Inspect these data and briefly explain whether they fit the definition of tidy data.
+    
 
 2. The file `under5mortality.csv` (available at the url "https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/under5mortality.csv") contains the child mortality rate per 1,000 children born for each country from 1800 to 2015. (Source: https://www.gapminder.org/data/)
     a. Briefly describe why it is not considered to be tidy data and what changes need to be made to tidy it.
     b. Use `gather` to create a tidy data set with columns `country`, `year` and `mortality`. Use `parse_number` to ensure that the `year` column is numeric.
 
 
-3. The file `mlb2016.csv` contains the salary information presented by *USA Today* for all 862 players in Major League Baseball. (Source: http://www.usatoday.com/sports/mlb/salaries/2016/player/all/)
+3. The file `mlb2016.csv` (available at the url "https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/mlb2016.csv") contains the salary information presented by *USA Today* for all 862 players in Major League Baseball. (Source: http://www.usatoday.com/sports/mlb/salaries/2016/player/all/)
     a. Briefly describe why it is not considered to be tidy data and what changes need to be made to tidy it.
-    b. Use `separate` and `extract_numeric` to tidy this data set.
+    b. Use `separate` and `parse_number` to tidy this data set.
 
-4.  The data set in `UBSprices2.csv` contains prices of a 1 kg bag of rice, a 1 kg loaf of bread, and a Big Mac in major world cities in 2009 and 2003.
+4.  The data set in `UBSprices2.csv` (available at the url "https://raw.githubusercontent.com/ds4stats/r-tutorials/master/tidying-data/data/UBSprices2.csv") contains prices of a 1 kg bag of rice, a 1 kg loaf of bread, and a Big Mac in major world cities in 2009 and 2003.
     a. Briefly describe why it is not considered to be tidy data and what changes need to be made to tidy it.
     b. Use `gather` and `separate` to tidy this data set. <br>
     (Hint: In addition to accepting characters, the `sep` argument can also be set to the position at which to create a split. For example, if we specify `sep = 2`, then the character strings will be split into the first two characters and the remaining characters. In this example the type of commodity is of variable length, so it is easiest to count from the left. This is specified by using a negative value.)
-    
+
+#### Option #2 (Questions 4 and 5)
+4. Question 4 is given above
+5. The code below constructs a data.frame "driverfatalities" containing simulated data summarizing the outcomes of two vehicle car accidents.  The variables include the date of birth (dob) of both drivers, each driver's injury status (dead or alive with injury severity ranging from not injured, or 0, to dead, or 3), and the number of passengers in each driver's vehicle.
+    a. Briefly describe why this is not considered tidy data and what changes need to be made to tidy it.
+    b. Take the necessary steps to tidy this data set.
+```{r}
+set.seed(12345)
+driverfatalities <- data.frame(accident_id = paste0("A",1:50), driver1_dob = as.Date(runif(50, 1,1111), origin = as.Date("1975-05-10")), driver2_dob = as.Date(runif(50, 1,1111), origin = as.Date("1975-05-10")), driver1_status = sample(size = 50, c("Died(3)", "Survived(0)", "Survived(1)", "Survived(2)"), prob = c(.1,.4,.25,.25), replace = TRUE), driver2_status = sample(size = 50, c("Died(3)", "Survived(0)", "Survived(1)", "Survived(2)"), prob = c(.1,.4,.25,.25), replace = TRUE), driver1_passengers = rpois(50,0.6), driver2_passengers = rpois(50,0.6))
+head(driverfatalities)
+```
+
 ### 6. Additional Resources
 
 * [RStudio's data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) provides a nice summary of how to reshape data sets and a quick reminder of the definition of tidy data.
