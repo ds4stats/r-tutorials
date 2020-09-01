@@ -14,10 +14,10 @@ Make sure that the following packages are loaded
 
 ```{r, warning=FALSE, message=FALSE}
 #install.packages("tidyr")
-#install.packages("ggplot2")
+#install.packages("ggformula")
 #install.packages("readr")
 library(tidyr)     # contains tools to tidy data
-library(ggplot2) # for plotting
+library(ggformula) # for plotting
 library(readr)     # a package for parsing data
 ```
 
@@ -118,11 +118,13 @@ head(tidy_ubs)
 
 **Remark** 
 
-This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data are typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggplot2` (we learn more about plotting data in the ggplot and ggformula tutorials).
+This data set started in a relatively tidy form, so it may be difficult to see the benefit of tidying it. Tidy data are typically required for summarizing and plotting data in R. For example, consider making a side-by-side boxplot using `ggformula` (we learn more about plotting data in the ggplot and ggformula tutorials).
 
 ```{r}
-qplot(data=tidy_ubs, x= factor(year), y=price, geom="boxplot")
-```
+tidy_ubs %>%
+  gf_boxplot(price ~ factor(year)) %>%	
+  gf_labs(x = "year")
+  ```
 
 This was straightforward since **tidy_ubs** was already tidy, but would have required extra manipulation in the original format. 
 
