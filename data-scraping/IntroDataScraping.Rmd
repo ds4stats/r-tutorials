@@ -212,8 +212,7 @@ on the y-axis.
 #### Option 2
 4. The web site [NY Times Best Sellers: Hardcover Fiction](http://www.nytimes.com/books/best-sellers/hardcover-fiction) contains a list of best-selling fiction books. Scrape the names of these top books and store the results in a clean data.frame. The list of books are tagged via `<h2>title</h2>`.
 
-#### Option 4
-#### Option #3
+#### Option 3
 4. The link https://www.auhouseprices.com/rent/list/NSW/2131/Ashfield/1/?sort=date&type=apartment&bmin=2&bmax=2 shows two-bedroom rental listings in Ashfield Australia.  Scrap this webpage to create a clean data.frame containing three variables: each rental's address, its price, and the month/year when the price was offered. Hint: this is best accomplished by writing a function and using a *for loop*.
 ```{r}
 N <- 3
