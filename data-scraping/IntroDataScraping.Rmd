@@ -2,7 +2,6 @@
 title: "Introduction to Data scraping with R"
 output:
   html_document:
- html_document:
     fig_height: 2
     fig_width: 5
   pdf_document: default
@@ -41,7 +40,7 @@ Note: some of the `rvest` commands may be slow depending on your Internet connec
 
 
 ```{r}
-popParse <- read_html"https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population")
+popParse <- read_html("https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population")
 
 str(popParse)
 ```
@@ -57,7 +56,7 @@ To extract a table from this web page (this may take some time):
 popNodes <- html_nodes(popParse, "table")
 popNodes
 ```
-There are two tables in this document. By inspecting the output of `popNodes`, we make a guess that we want the first table. (In other cases, trial and error may be required.) We select the first table by using double brackets, which are used to index list objects::
+There are two tables in this document. By inspecting the output of `popNodes`, we make a guess that we want the first table. (In other cases, trial and error may be required.) We select the first table by using double brackets, which are used to index list objects:
 
 
 ```{r}
@@ -107,7 +106,7 @@ movieParse<- read_html("http://www.boxofficemojo.com/alltime/world/?pagenum=1")
 movieTables <- html_nodes(movieParse, "table")
 head(movieTables)
 
-movies1 <- html_table(movieTable, header = TRUE, fill = TRUE)[[1]]
+movies1 <- html_table(movieTables, header = TRUE, fill = TRUE)[[1]]
 names(movies1) <- c("Rank", "Title", "LifetimeGross", "Year") 
 str(movies1)
 ```
