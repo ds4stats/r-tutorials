@@ -106,6 +106,7 @@ gf_point(SalePrice/100000 ~ GrLivArea, data = AmesHousing, shape = ~ KitchenQual
 gf_boxplot(log(SalePrice) ~ KitchenQual | Fireplaces, data =  AmesHousing) %>%
     gf_jitter(width = 0.2, alpha = 0.1, color = "blue")
 ```
+What does the pipe operator do here?
 9)  The graph in question 8 uses a slightly different syntax. Recreate the graph in quesiton 8, but instead of using `KitchenQual | Fireplaces`, use the `gf_facet_wrap()` function.
 10) What is the difference between `gf_jitter` and `gf_point`?
 
@@ -133,7 +134,7 @@ gf_density(~ SalePrice, data = AmesHousing2, color = ~ Fireplace2, fill = ~ Fire
 
 **Questions:**  
 
-11) Pick another quantitative variable from the  `AmesHousing2` data set and describe its distribution using the `gf_histogram()` function. Use a secondary variable to see more detailed pattersn, such as `fill = ~KitchenQual`. Consider different bin widths to see if the shape of the distribution changes. Type `?gf_histogram` in the command line and then learn how to use the `bin` and `binwidth` arguement. 
+11) Pick another quantitative variable from the  `AmesHousing2` data set and describe its distribution using the `gf_histogram()` function. Use a secondary variable to see more detailed pattersn, such as `fill = ~KitchenQual`. Consider different bin widths to see if the shape of the distribution changes. Type `?gf_histogram` in the command line and then learn how to use the `bin` and `binwidth` arguement. How does the shape of the distribution change upon changing `bin` and `binwidth` values?
 
 
 
@@ -141,14 +142,16 @@ gf_density(~ SalePrice, data = AmesHousing2, color = ~ Fireplace2, fill = ~ Fire
 
 
 
-### 4. On Your Own
+### 4. On Your Own (Don't submit if submitting the ggplot lab on your own option)
 
-In order to complete this activity, you will need to use the `dplyr` package to manipulate the dataset before making any graphics.
+For this activity, you should use the `dplyr` package to manipulate the dataset before making any graphics.
 
 * Restrict the `AmesHousing` data to only sales under normal conditions. In other words, `Condition.1 == Norm`
 * Create a new variable called `TotalSqFt = GrLivArea  +  TotalBsmtSF` and remove any homes with more than 3000 total square feet.
 * Create a new variable, where `No` indicates no fireplaces in the home and `Yes` indicates at least one fireplace in the home.
+* Create any other new variables you believe to be informative.
 * With this modified data file, create a graphic involving no more than three explanatory variables that portrays how to estimate sales price. For example, in previous graphics we used kitchen quality, above ground square footage, and number of fireplaces to estimate sale price.
+* In addition to submitting your graphic, you should also submit a paragraph explaining what your graph shows and a short justification of the choices you made. Your graphic uses a newly created, derived variable, you should include an explanation of what that variable is.
 
 ### Additional Resources
 - https://www.rdocumentation.org/packages/ggformula/versions/0.7.0: A full description of the ggformula package.
