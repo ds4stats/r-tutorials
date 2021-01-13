@@ -1,8 +1,9 @@
 ---
 title: "Introduction to Merging Data Tables in R"
 output:
-  html_document: default
+  pdf_document: default
   word_document: default
+  html_document: default
 ---
 
 There are many situations where data sets are broken into multiple tables, and multiple reasons that this might make sense---sometimes it is easier to 
@@ -132,7 +133,6 @@ Above, the `inner_join` and `semi_join` returned the same number of rows, but th
 ```{r}
 extra_order <- data.frame(order = 5, id = 42, date = "May-01")
 extra_order
-
 orders2 <- rbind(orders, extra_order)
 orders2
 ```
@@ -193,10 +193,8 @@ Another issue that crops up occasionally is duplicate entries in the variable(s)
 # Creating example data frames
 table1 <- data.frame(key = c("a", "a", "b", "b", "c"), var = 1:5)
 table1
-
 table2 <- data.frame(key = c("a", "a", "b", "b", "c"), var = LETTERS[1:5])
 table2
-
 # A full join
 full_join(x = table1, y = table2, by = "key")
 ```
@@ -264,3 +262,4 @@ D. Is it possible that the unsalaried players did not actually play in games the
 * [`dplyr` vignette on two table verbs](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html) provides additional examples of merging data tables.
 
 * [William Surles course on joining using dplyr, it contains several extra commands and examples ](https://rpubs.com/williamsurles/293454)
+
