@@ -193,8 +193,10 @@ Another issue that crops up occasionally is duplicate entries in the variable(s)
 # Creating example data frames
 table1 <- data.frame(key = c("a", "a", "b", "b", "c"), var = 1:5)
 table1
+
 table2 <- data.frame(key = c("a", "a", "b", "b", "c"), var = LETTERS[1:5])
 table2
+
 # A full join
 full_join(x = table1, y = table2, by = "key")
 ```
@@ -262,4 +264,3 @@ D. Is it possible that the unsalaried players did not actually play in games the
 * [`dplyr` vignette on two table verbs](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html) provides additional examples of merging data tables.
 
 * [William Surles course on joining using dplyr, it contains several extra commands and examples ](https://rpubs.com/williamsurles/293454)
-
