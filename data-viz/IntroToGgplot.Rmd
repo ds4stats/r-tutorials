@@ -36,14 +36,19 @@ In this section, we will briefly provide examples of how the `qplot` function (q
 ```{r eval=FALSE}
 # Create a histogram of housing prices
 qplot(data=AmesHousing, x=SalePrice, main ="Histogram of Housing Prices in Ames, Iowa")
+
 # Create a scatterplot of above ground living area by sales price
 qplot(data=AmesHousing,x=GrLivArea, y=SalePrice)
+
 # Create a scatterplot with log transformed variables, coloring by a third variable
 qplot(data=AmesHousing,x=log(GrLivArea),y=log(SalePrice),color=KitchenQual)
+
 # Create distinct scatterplots for each type of kitchen quality and number of fireplaces
 qplot(data=AmesHousing,x=GrLivArea,y=SalePrice,facets=KitchenQual~Fireplaces)
+
 # Create a dotplot of sale prices by kitchen quality
 qplot(data=AmesHousing,x=KitchenQual,y=SalePrice)
+
 # Create a boxplot of sale prices by kitchen quality
 qplot(data=AmesHousing,x=KitchenQual,y=log(SalePrice),geom="boxplot")
 ```
