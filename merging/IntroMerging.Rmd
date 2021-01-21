@@ -1,8 +1,9 @@
 ---
 title: "Introduction to Merging Data Tables in R"
 output:
-  html_document: default
+  pdf_document: default
   word_document: default
+  html_document: default
 ---
 
 There are many situations where data sets are broken into multiple tables, and multiple reasons that this might make sense---sometimes it is easier to 
@@ -132,7 +133,6 @@ Above, the `inner_join` and `semi_join` returned the same number of rows, but th
 ```{r}
 extra_order <- data.frame(order = 5, id = 42, date = "May-01")
 extra_order
-
 orders2 <- rbind(orders, extra_order)
 orders2
 ```

@@ -1,8 +1,8 @@
 ---
 title: "Introduction to Tidy Data in R"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
   word_document:
     fig_height: 3
     fig_width: 5
@@ -255,7 +255,7 @@ Notice that the first argument given to `spread` is the data frame, followed by 
     (Hint: In addition to accepting characters, the `sep` argument can also be set to the position at which to create a split. For example, if we specify `sep = 2`, then the character strings will be split into the first two characters and the remaining characters. In this example the type of commodity is of variable length, so it is easiest to count from the left. This is specified by using a negative value.)
 
 #### Option #2 (Questions 4 and 5)
-4. Question 4 is given above
+4. Question 4 is given above.
 5. The code below constructs a data.frame "driverfatalities" containing simulated data summarizing the outcomes of two vehicle car accidents.  The variables include the date of birth (dob) of both drivers, each driver's injury status (dead or alive with injury severity ranging from not injured, or 0, to dead, or 3), and the number of passengers in each driver's vehicle.
     a. Briefly describe why this is not considered tidy data and what changes need to be made to tidy it.
     b. Take the necessary steps to tidy this data set.
