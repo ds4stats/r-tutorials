@@ -2,7 +2,12 @@
 title: "Introduction to Data scraping with R"
 output:
   html_document:
-    df_print: paged
+    fig_height: 2
+    fig_width: 5
+  pdf_document: default
+  word_document:
+    fig_height: 2
+    fig_width: 5
 ---
 ###Scraping Data From the Web###
 
@@ -16,7 +21,7 @@ Web pages are written in HTML (Hyper Text Markup Language) which uses **tags** t
 In this tutorial, we will learn how to read data from a table on a web page into R. We will need the package `rvest` to get the data from the web page, and the `stringr` package to clean up the data.
 
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(rvest)
 library(stringr)
 ```
@@ -25,7 +30,7 @@ library(stringr)
 ### 1. Reading data into R with `rvest`
 
 
-To get the population data on  [Wikipedia](https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900) into R, we use the `read_html` command from the `xml2` package (which is attached when `rvest` is called) to parse the page to obtain an HTML document. 
+To get the population data on [Wikipedia](https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population) into R, we use the `read_html` command from the `xml2` package (which is attached when `rvest` is called) to parse the page to obtain an HTML document. 
 
 
 We then use the `html_nodes` command that extracts all occurrences of the desired tag. We will be interested in scraping data presented in tables, so in the source code, we look for the table tag: `<table> ... </table>`.
@@ -35,7 +40,7 @@ Note: some of the `rvest` commands may be slow depending on your Internet connec
 
 
 ```{r}
-popParse <- read_html("https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900")
+popParse <- read_html("https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population")
 
 str(popParse)
 ```
@@ -51,11 +56,11 @@ To extract a table from this web page (this may take some time):
 popNodes <- html_nodes(popParse, "table")
 popNodes
 ```
-There are several tables in this document. By inspecting the output of `popNodes`, we make a guess that we want the third table. (In other cases, trial and error may be required.) We select the third table by using double brackets:
+There are two tables in this document. By inspecting the output of `popNodes`, we make a guess that we want the first table. (In other cases, trial and error may be required.) We select the first table by using double brackets, which are used to index list objects:
 
 
 ```{r}
-pop <- html_table(popNodes, header = TRUE, fill = TRUE)[[3]]
+pop <- html_table(popNodes, header = TRUE, fill = TRUE)[[1]]
 str(pop)
 
 ```
@@ -63,55 +68,28 @@ str(pop)
 ### 3. Cleaning the data frame
 
 
-We now have a workable data frame that we can analyze. Notice that even though the first and third columns are numbers, they are classified as "character." For `Rank`, that is because the first observation is the world population and it is not assigned a rank, but rather, the character "-". The `Population` column is also a character because the numbers have commas in them, plus Morocco's population is given as "8,000,000 [2][3]" to indicate some footnotes. We need to convert these columns to be numeric.
-
-
-In the case of the <tt>Rank</tt> column, we will remove the world population.
+We now have a workable data frame that we can analyze. Notice that even though several of the columns are numbers, they are classified as "character." The `Population` column is also a character because the numbers have commas in them, plus some observations include characters such as `[1]` to indicate some footnotes. We need to convert these columns to be numeric.
 
 
 We will also simplify the name of the third column to "Population."
 
 
 ```{r}
-pop2 <- pop[-1, ]         #remove row 1
+pop2 <- pop[-242, ]         #remove the last row (Total)
+names(pop2) <- c("Rank", "Country", "Population", "Percent", "Date", "Source")
 head(pop2)
-
-row.names(pop2) <- NULL    #reset row numbers to start at 1
-
-pop2$Rank <- as.numeric(pop2$Rank) #coerce Rank to numeric
-
-names(pop2)[3] <- "Population" #rename 3rd column
 ```
-
 
 To remove the commas in the Population numbers, we will use `str_replace_all` from the `stringr` package.
 
-
 ```{r}
-pop2$Population <- str_replace_all(pop2$Population, ",", "")
-head(pop2)
+pop2$Rank <- as.numeric(pop2$Rank) #coerce Rank to numeric
+pop3 <- pop2
+pop3$Population <- str_replace_all(pop2$Population, "\\$|,", "" )
+pop3$Percent <- str_replace_all(pop2$Percent, "\\%", "" )
+pop3$Country <- str_replace_all(pop2$Country, "\\[*.]", "" )
+head(pop3)
 ```
-
-
-We still have a problem with Morocco, country number 19. Since it is the only country that is a problem, we can fix this individually, but we will also show a more general way to do this in case you encounter more than one instance.
-
-
-```{r}
-pop2$Population[19]
-out <- pop2$Population
-out[19] <- "8000000"
-out <- as.numeric(out)
-head(out, 20)
-
-out2 <- str_replace_all(pop2$Population, "\\[[^]]+\\]", "")
-out2 <- as.numeric(out2)
-head(out2, 20)
-
-identical(out, out2)
-
-pop2$Population <- out2
-```
-
 
 ### 4. A movie box office example
 
@@ -128,43 +106,68 @@ movieParse<- read_html("http://www.boxofficemojo.com/alltime/world/?pagenum=1")
 movieTables <- html_nodes(movieParse, "table")
 head(movieTables)
 
-movies <- html_table(movieTables, header = TRUE, fill = TRUE)[[3]]
-str(movies)
+movies1 <- html_table(movieTables, header = TRUE, fill = TRUE)[[1]]
+names(movies1) <- c("Rank", "Title", "LifetimeGross", "Year") 
+str(movies1)
 ```
 
-
-We will first clean up the column names and then convert the character variables into numeric variables. 
-
-
+### 5. Non-table Nodes
+So far the two examples we've looked at extract tables from a webpage, but lots of other information from a webpage can be extracted using `rvest`.  The example below extracts data on the images contained on the Box Office Mojo webpage:
 ```{r}
-names(movies)[5:9] <- c("DomesticDollars", "DomesticPercentage", "OverseasDollars", "OverseasPercentage", "Year")
-```
-
-
-For the grosses, we note that the numbers are either prefaced by a dollar sign or end with a percentage, both of which will need to be removed. We will also have to remove the commas.
-
-
-```{r}
-out <- str_replace_all(movies$Worldwide, "\\$|,", "" )
-head(out)
-
-movies$Worldwide <- as.numeric(out)
-```
-
-
-**Exercise** Clean up the remaining variables.
-
-
-How many images are there on this web page? Images are coded as
-`<img source = "NameOfImageFile.jpg">`, so we search for the selector "img".
-
-
-```{r}
+movieParse<- read_html("https://www.boxofficemojo.com/")
 moviesImg <- html_nodes(movieParse, "img")
-
-moviesImg
+head(moviesImg)
 ```
-### 4.  A Billboard Top 100 example
+We see that there are 6 images on the page.  We can also see that the page has Twitter account items we might consider extracting using string processing. In general, there are a huge variety of nodes that we could extract, the next section provides a more detailed example of extracting data from a non-table html node.
+
+### 6. A NY Times Article Example
+Sometimes we might want to extract specific nodes that are defined by CSS (Cascading Style Sheets, a langauge which defines the style of an html page). For this goal, it can be very useful to view to html source code of a page  for guidance.
+To view the HTML code behind a webpage, right click anywhere on the page and select "View Page Source" in Chrome or Firefox, "View Source" in Internet Explorer, or "Show Page Source" in Safari. (If that option doesn't appear in Safari, just open Safari Preferences, select the Advanced tab, and check "Show Develop menu in menu bar".)
+The example we will look at is a [New York Times article](https://www.nytimes.com/interactive/2017/06/23/opinion/trumps-lies.html).  The goal for this example is transform the body of text into a clean data.frame containing:
+1. The lie itself
+2. The date of that lie
+3. A url sourcing the lie
+By inspecting the html source code, we see that each lie has the following format:
+```
+<span class="short-desc"><strong> DATE </strong> LIE <span class="short-truth"><a href="URL"> EXPLANATION </a></span></span>
+```
+This tells us that extracting all `<span>` tags belonging to the class "short-desc" will provide us what we need.
+```{r}
+NytTrump <- read_html("https://www.nytimes.com/interactive/2017/06/23/opinion/trumps-lies.html")
+lies <- html_nodes(NytTrump, ".short-desc")
+lies
+```
+The "." in from of "short-desc" is [CSS selector syntax](https://www.w3schools.com/cssref/css_selectors.asp), it will select all elements with class="short-desc".  See [CSS selector link](https://www.w3schools.com/cssref/css_selectors.asp) for more selector examples.
+After extracting each lie, the first task is to find the date of each.  For this we notice that each date is wrapped within a `<strong>` tag.  Thus, extracting nodes with the `<strong>` tag will provide the dates we need:
+```{r}
+dates <- html_nodes(lies, "strong")
+dates <- html_text(dates, trim = TRUE)  ## html_text will parse text from the html jargon
+head(dates)
+```
+Extracting each lie requires a different strategy.  We could do it using regular expressions, but instead we use the `xml_contents` function:
+```{r}
+lies_var <- xml_contents(lies)
+```
+We see that each lie has three components, the second containing the lie itself, and these components are arranged in a vector. We can exploit this ordering and extract the lies using their positions:
+```{r}
+lies_var2 <- lies_var[seq(2, length(lies_var), by = 3)]
+```
+We can use a similar strategy to get the urls:
+```{r}
+lies_var3 <- lies_var[seq(3, length(lies_var), by = 3)]
+```
+From here we see that all the urls are tagged with "a", we can select these nodes using the tag, and then select the href object to get the url itself.  Note that we could have noticed this right away and eliminated the prior step.
+```{r}
+lies_var3 <- html_node(lies_var3, "a")
+url_var <- html_attr(lies_var3, "href")
+```
+At this point we've satisfied the goal of this example, next step might be a textual analysis that further extracts key words or categorizes the urls.
+```{r}
+lies_clean <- data.frame(date = dates, lie = as.character(lies_var2), url = url_var)
+head(lies_clean)
+```
+
+### 7.  A Billboard Top 100 example
 
 The website [billboard.com](http://www.billboard.com)
 keeps track of top songs, albums and artists from the music industry.
@@ -198,12 +201,26 @@ head(top50women, 5)
 
 ### On Your Own
 
+1. In the population table, why are the number of rows not equivalent to the highest rank value?
+2. Create a new population table using a list of countries by population in 1900 on [Wikipedia](https://en.wikipedia.org/wiki/List_of_countries_by_population_in_1900).
+3. Clean the movies1 data and create a graph with Year on the x-axis and LifetimeGross
+on the y-axis.
 
-* The web site [BikeRaceInfo](http://www.bikeraceinfo.com/tdf/tdfstats.html) has a table with data on past winners of the Tour de France. Create a cleaned-up data frame of this data.
+#### Option 1
+4. The web site [BikeRaceInfo](http://www.bikeraceinfo.com/tdf/tdfstats.html) has a table with data on past winners of the Tour de France. Create a cleaned-up data frame of this data.
 
-* The web site [NY Times Best Sellers: Hardcover Fiction](http://www.nytimes.com/books/best-sellers/hardcover-fiction) contains a list of best-selling fiction books. Scrape the names of these top books. The list of books are tagged via `<h2>title</h2>`.
+#### Option 2
+4. The web site [NY Times Best Sellers: Hardcover Fiction](http://www.nytimes.com/books/best-sellers/hardcover-fiction) contains a list of best-selling fiction books. Scrape the names of these top books and store the results in a clean data.frame. The list of books are tagged via `<h2>title</h2>`.
 
-
+#### Option 3
+4. The link https://www.auhouseprices.com/rent/list/NSW/2131/Ashfield/1/?sort=date&type=apartment&bmin=2&bmax=2 shows two-bedroom rental listings in Ashfield Australia.  Scrap this webpage to create a clean data.frame containing three variables: each rental's address, its price, and the month/year when the price was offered. Hint: this is best accomplished by writing a function and using a *for loop*.
+```{r}
+N <- 3
+for(i in 1:N){
+  print(i)
+}
+```
 ### Resources
 
-* [HTML Tutorial](www.w3schools.com)
+* [HTML Tutorial](https://www.w3schools.com/html/)
+* [Selector Gadget](https://selectorgadget.com/). A nice example is [Scraping HomePrices](https://www.youtube.com/watch?v=JAPDCTHG-zc)
