@@ -33,7 +33,7 @@ AmesHousing <- read.csv("https://raw.githubusercontent.com/ds4stats/r-tutorials/
 
 In this section, we will briefly provide examples of how the `qplot` function (quick plot) can be used to quickly create basic graphs. Run the code below and answer Questions 1)-5).
 
-```{r eval=FALSE}
+```{r, eval=FALSE}
 # Create a histogram of housing prices
 qplot(data=AmesHousing, x=SalePrice, main ="Histogram of Housing Prices in Ames, Iowa")
 
@@ -115,23 +115,18 @@ ggplot(data=AmesHousing) +
 * `geom_density` overlays a density curve on top of the histogram.
 * Typically density curves and histrograms have very different scales, here we use `y = (..count..)` to modify the density. Alternatively, we could specify `aes(x = SalePrice/100000, y = (..density..))` in the histogram geom.
 * The labs() command adds labels to the graph, in this case a title and an x-axis label. A y-axis label can also be added by using `y = " ".
-
-
 In the code below we create three scatterplots of the log of the above ground living area by the log of sales price
-
 ```{r}
 ggplot(data=AmesHousing, aes(x=log(GrLivArea), y=log(SalePrice)) ) +      
   geom_point(shape = 3, color = "darkgreen") +                                     
   geom_smooth(method=lm,  color="green") +                  
   labs(title="Figure 10: Housing Prices in Ames, Iowa")
-
  
 ggplot(data=AmesHousing) + 
   geom_point(aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual),shape=2, size=2) + 
   geom_smooth(aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual), 
           method=loess, size=1) +                        
   labs(title="Figure 11: Housing Prices in Ames, Iowa") 
-
 ggplot(data=AmesHousing) +
   geom_point(mapping = aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual)) +
   geom_smooth(mapping = aes(x=log(GrLivArea), y=log(SalePrice), color=KitchenQual), 
@@ -148,7 +143,7 @@ ggplot(data=AmesHousing) +
     + `se=FALSE` removes the shaded 95% confidence regions around each line. The additional option `level` can change the confidence level.
     + `fullrange=TRUE` extends all regression lines to the same length
 *  `facet_grid` and `facet_wrap` commands are used to create multiple plots. In Figure 12, we have created separate scatterplots based upon the number of fireplaces.
-*  When assigning fixed characteristics, (such as `color`, `shape` or `size`), the commands occur outside the `aes`, as in Figure 10, `color="green"`. When characteristics are dependent on the data, the command should occur within the `aes`, such as in Figure 11 `color=Kitchen.Qual`.
+*  When assigning fixed characteristics, (such as `color`, `shape` or `size`), the commands occur outside the `aes`, as in Figure 10, `color="green"`. When characteristics are dependent on the data, the command should occur within the `aes`, such as in Figure 11 `color=KitchenQual`.
 
 
 In the above examples, only a few `geoms` are listed. The [ggplot2 website](http://docs.ggplot2.org/current/) lists each `geom` and gives detailed examples of how they are used. 
@@ -166,19 +161,16 @@ In the above examples, only a few `geoms` are listed. The [ggplot2 website](http
 # A histogram of above ground living area 
 ggplot(data=AmesHousing) +                         
   geom_histogram(mapping = aes(GrLivArea))
-
 # Create a scatterplot of above ground living area by sales price
 ggplot(data=AmesHousing, aes(x=YearBuilt, y=SalePrice)) +      
   geom_point() +
   geom_smooth(method=lm) +                  
   labs(title="Housing Prices in Ames, Iowa", x="Year Built", y = "Sale Price")
-
 # Create scatterplot and regression lines colored by the kitchen quality rating
 ggplot(data=AmesHousing, aes(x=YearBuilt, y=SalePrice, color=OverallQual)) + 
   geom_point() +                               
   geom_smooth(method=lm, se=FALSE) +                        
   labs(title="Housing Prices in Ames, Iowa", x="Year Built", y = "Sale Price")
-
 ```
 
 ### 5. The `mplot` function
@@ -191,7 +183,7 @@ The `mosaic` package includes an `mplot` function that involves a helpful pull-d
 
 * Graphics System: `ggplot2`
 * Type of Plot: `boxplot`
-* x-variable: `Kitchen.Qual` representing the condition of the sale
+* x-variable: `KitchenQual` representing the condition of the sale
 * y-variable: `SalePrice`
 
 After selecting these items, click the `Show Expression` to see the `ggplot2` code used to make the boxplot. Now modify the code to include an appropriate title to the plot.
@@ -216,7 +208,6 @@ AmesHousing2 <- filter(AmesHousing, Fireplaces < 3)
 # Create a new variable called Fireplace2
 AmesHousing2 <-mutate(AmesHousing2,Fireplace2=as.factor(Fireplaces))
 #str(AmesHousing2)
-
 ggplot(data=AmesHousing2) +                 
   geom_density(aes(SalePrice, color = Fireplace2,  fill = Fireplace2), alpha = 0.2)
 ```
@@ -245,23 +236,21 @@ ggplot(AmesHousing2, aes(x = Fireplace2, y = SalePrice, color = PavedDrive)) +
 
 15) Create a new boxplot, similar to the one above, but use `theme_bw()` instead of the given theme command. Explain how the graph changes.
 
-16) Use the tab completion feature in RStudio (type theme and hit the `Tab` key to see various options) to determine what theme is the default for most graphs in ggplot.
+16) Use the tab completion feature in RStudio (type ggplot() and hit the `Tab` key to select theme and see various options) as well as look at the [cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) to determine what theme is the default for most graphs in ggplot.
 
 
-### 7. On your own
+### 7. On your own (Don't submit if submitting the ggformula lab on your own option)
 
 For this activity, you should use the `dplyr` package to manipulate the dataset before making any graphics.
 
-#### Option #1 (there is no second option this time, but I encourage you to do the "More Practice" question)
-
 * Restrict the `AmesHousing` data to only sales under normal conditions. In other words, `Condition1 == Norm`
-* Create a new variable called `TotalSqFt = GRLivArea  +  TotalBsmtSF` and remove any homes with more than 3000 total square feet.
+* Create a new variable called `TotalSqFt = GrLivArea  +  TotalBsmtSF` and remove any homes with more than 3000 total square feet.
 * Create a new variable, where `No` indicates no fireplaces in the home and `Yes` indicates at least one fireplace in the home.
 * Create any other new variables you believe to be informative.
 * With this modified data file, create a graphic involving no more than three explanatory variables that best portrays how to predict sales price. For example, Figure 12 uses a linear model of kitchen quality, above ground square footage, and number of fireplaces to predict sale price. Another example is the figure in the **Customizing graphs** section, which uses the fireplaces and paved driveway to predict sale price.
 * In addition to submitting your graphic, you should also submit a paragraph explaining what your graph shows and a short justification of the choices you made. Your graphic uses a newly created, derived variable, you should include an explanation of what that variable is.
 
-#### More Practice
+### More Practice
 
 The data "economics" is included in the `ggplot2` package (see the documentation [provided here](https://ggplot2.tidyverse.org/reference/economics.html) for descriptions of the variables).  
 
@@ -293,7 +282,6 @@ presidents <- data.frame(year = 1967:2015, president = c(rep("Johnson",2), rep("
 
 - http://www.cookbook-r.com/Graphs/: R Graphics Cookbook, a text by Winston Chang
 http://ggplot2.org/book/ : Sample chapters of Hadley Wickhams text,  ggplot2: Elegant Graphics for Data Analysis
-
 
 
 
