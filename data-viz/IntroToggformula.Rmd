@@ -100,7 +100,7 @@ gf_point(SalePrice/100000 ~ GrLivArea, data = AmesHousing, shape = ~ KitchenQual
 
 5) What does the `gf_lm()` command do? How is it different than `gf_smooth()`?
 6) Try incorporating `gf_facet_grid(Fireplaces~KitchenQual)` into the scatterplot. What does this command do?
-7) Create a scatterplot using `Year.Built` as the explanatory variable and `SalePrice` as the response variable. Include a regression line, a title, and labels for the x and y axes.
+7) Create a scatterplot using `YearBuilt` as the explanatory variable and `SalePrice` as the response variable. Include a regression line, a title, and labels for the x and y axes.
 8) Use the following code to create a boxplot that incorporates two explanatory variables, `KitchenQual` and `Fireplaces`. We then use the pipe operator to add points to the boxplot. Note that you will need to adjust the `fig.height` as done in previous graphs.
 ```{r eval=FALSE, echo = TRUE}
 gf_boxplot(log(SalePrice) ~ KitchenQual | Fireplaces, data =  AmesHousing) %>%
@@ -134,7 +134,7 @@ gf_density(~ SalePrice, data = AmesHousing2, color = ~ Fireplace2, fill = ~ Fire
 
 **Questions:**  
 
-11) Pick another quantitative variable from the  `AmesHousing2` data set and describe its distribution using the `gf_histogram()` function. Use a secondary variable to see more detailed pattersn, such as `fill = ~KitchenQual`. Consider different bin widths to see if the shape of the distribution changes. Type `?gf_histogram` in the command line and then learn how to use the `bin` and `binwidth` arguement. How does the shape of the distribution change upon changing `bin` and `binwidth` values?
+11) Pick another quantitative variable from the  `AmesHousing2` data set and describe its distribution using the `gf_histogram()` function. Use a secondary variable to see more detailed patterns, such as `fill = ~KitchenQual`. Consider different bin widths to see if the shape of the distribution changes. Type `?gf_histogram` in the command line and then learn how to use the `bin` and `binwidth` arguement. 
 
 
 
