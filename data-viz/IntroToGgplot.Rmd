@@ -236,14 +236,12 @@ ggplot(AmesHousing2, aes(x = Fireplace2, y = SalePrice, color = PavedDrive)) +
 
 15) Create a new boxplot, similar to the one above, but use `theme_bw()` instead of the given theme command. Explain how the graph changes.
 
-16) Use the tab completion feature in RStudio (type theme and hit the `Tab` key to see various options) to determine what theme is the default for most graphs in ggplot.
+16) Use the tab completion feature in RStudio (type ggplot() and hit the `Tab` key to select theme and see various options) as well as look at the [cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) to determine what theme is the default for most graphs in ggplot.
 
 
-### 7. On your own
+### 7. On your own (Don't submit if submitting the ggformula lab on your own option)
 
 For this activity, you should use the `dplyr` package to manipulate the dataset before making any graphics.
-
-#### Option #1 (there is no second option this time, but I encourage you to do the "More Practice" question)
 
 * Restrict the `AmesHousing` data to only sales under normal conditions. In other words, `Condition1 == Norm`
 * Create a new variable called `TotalSqFt = GrLivArea  +  TotalBsmtSF` and remove any homes with more than 3000 total square feet.
@@ -252,7 +250,7 @@ For this activity, you should use the `dplyr` package to manipulate the dataset 
 * With this modified data file, create a graphic involving no more than three explanatory variables that best portrays how to predict sales price. For example, Figure 12 uses a linear model of kitchen quality, above ground square footage, and number of fireplaces to predict sale price. Another example is the figure in the **Customizing graphs** section, which uses the fireplaces and paved driveway to predict sale price.
 * In addition to submitting your graphic, you should also submit a paragraph explaining what your graph shows and a short justification of the choices you made. Your graphic uses a newly created, derived variable, you should include an explanation of what that variable is.
 
-#### More Practice
+### More Practice
 
 The data "economics" is included in the `ggplot2` package (see the documentation [provided here](https://ggplot2.tidyverse.org/reference/economics.html) for descriptions of the variables).  
 
