@@ -8,7 +8,7 @@ output:
 
 ```{r,message = FALSE, warning = FALSE}
 # load required packages
-	#install.packages("leaflet")
+#install.packages("leaflet")
 #install.packages("maptools")
 #install.packages("scales")
 #install.packages("rgdal")
@@ -151,7 +151,7 @@ p
 
 2) Suppose you want to look the effects of terrorism before, during, and after the United States invasion of Iraq in 2003. Create three maps of the area, displayed side-by-side. Hint: You might also want to center the map on Iraq using `xlim = c(35,50)` and `ylim = c(28,38)`.
 
-3) Create a world map colored by the square root of the estimated population `sqrt(pop_est)` from the `Worldshapes@data`. Does it appear that population is highly correlated with the number of incidents that occur?
+3) Create a world map colored by the square root of the estimated population `sqrt(pop_est)` from the `Worldshapes@data`. Does it appear that population is highly correlated with the number of incidents that occur? Use any year of your choice.
 
 ```{r eval=FALSE, echo=FALSE}
 p <- ggplot() + geom_point(data = Incidents2, 
@@ -194,7 +194,7 @@ Maps created with `leaflet` are embedded with even more powerful capabilities. I
 
 **Questions**
 
-4) Using the `leaflet` map created with the above code, identify the location of the indicent that resulted in the most deaths in Great Britain. Who was the intended target during this incident?
+4) Using the `leaflet` map created with the above code, identify the location of the indicent that resulted in the most deaths in Great Britain. Who was the intended target during this incident? For reference, click on the data point to see more description about the terrorist incidents.
 5) Use the `leaflet` package to create an interactive map of the United States using years 2000 through 2005.
 
 ### 5. On your own
