@@ -236,7 +236,7 @@ The files `books.csv`, `authors.csv`, and `book-authors.csv` give details about 
 
 7. Use the same join statement that you did in #4, but using **books2** rather than **books**.
 
-	#### Option #2
+#### Option #2
 The package "Lahman" contains a comprehensive baseball database with 24 different tables.
 ```{r}
 #install.packages("Lahman")
@@ -250,8 +250,11 @@ The database is structured such that several ID variables can be used to link th
 #head(Master)
 ```
 A. The "Master" table contains one row for each unique player in the database. To simplify things a bit, create a new data.frame named "players" which only contains the playerID, nameFirst, and nameLast variables.
-B. Interestingly, a number of players do not have salary data. Use the appropriate join to create a new data.frame "no_salary" containing players without an entry in the "Salary" table. Use the commands head(no_salary), tail(no_salary), and dim(no_salary) to display your results.
+
+B. Interestingly, a number of players do not have salary data. Use the appropriate join to create a new data.frame "no_salary" containing players without an entry in the "Salaries" table. Use the commands head(no_salary), tail(no_salary), and dim(no_salary) to display your results.
+
 C. Is it possible that the unsalaried players didn't participate in a game with their team and that is why they did not earn a salary?  How many of the unsalaried players do not have an entry in the "Appearances" table?
+
 D. Is it possible that the unsalaried players did not actually play in games they appeared in? Use the appropriate joins and dplyr commands to create a new data.frame "non_salary_atbats" that contains each player id and their total number of at bats, use na.rm to remove missing data when summarizing.  Use the commands head(non_salary_atbats), tail(non_salary_atbats), and dim(non_salary_atbats) to display your results.
 
 
